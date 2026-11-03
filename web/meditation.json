@@ -1,0 +1,11 @@
+{
+  "name": "Meditación (respiración)",
+  "poses": [
+    { "name": "Postura cómoda", "image": "meditation", "duration": 60, "instruction": "Siéntate con la espalda recta, manos en las rodillas. Cierra los ojos suavemente.", "breath": "Respira naturalmente mientras te acomodas." },
+    { "name": "Box Breathing (4-4-4-4)", "image": "meditation", "duration": 120, "instruction": "Inhala 4s → retén 4s → exhala 4s → retén 4s. Repite. Calma el sistema nervioso.", "breath": "Inhala 4 · Retén 4 · Exhala 4 · Retén 4" },
+    { "name": "Respiración 4-7-8", "image": "meditation", "duration": 120, "instruction": "Inhala 4s por la nariz → retén 7s → exhala 8s por la boca. Repite 4 ciclos.", "breath": "Inhala 4 · Retén 7 · Exhala 8" },
+    { "name": "Respiración abdominal", "image": "meditation", "duration": 90, "instruction": "Mano en el abdomen. Inhala llenando el vientre, exhala suavemente. Sin forzar.", "breath": "Inhala profundo · Exhala lento" },
+    { "name": "Atención plena (mindfulness)", "image": "meditation", "duration": 120, "instruction": "Observa pensamientos sin juzgar. Cuando te distraigas, vuelve a la respiración.", "breath": "Respiración natural, observa." },
+    { "name": "Cierre", "image": "meditation", "duration": 60, "instruction": "Vuelve lentamente. Mueve dedos y pies. Abre los ojos cuando estés listo.", "breath": "Respira profundamente y suelta." }
+  ]
+}

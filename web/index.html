@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yoga Minimal</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="style.css">
+  <meta name="theme-color" content="#f5f5f0">
+</head>
+<body>
+  <header>
+    <h1>Yoga Minimal</h1>
+    <nav class="mode-nav">
+      <button id="mode-yoga" class="mode-btn active">Yoga</button>
+      <button id="mode-meditation" class="mode-btn">Meditación</button>
+    </nav>
+    <div class="session-info">
+      <span id="session-name">Secuencia</span>
+      <span id="timer">00:00</span>
+    </div>
+  </header>
+
+  <main>
+    <div class="pose-card">
+      <img id="pose-image" src="" alt="Postura" />
+      <h2 id="pose-name">Postura</h2>
+      <p id="pose-instruction" class="instruction"></p>
+      <p id="pose-breath" class="breath"></p>
+    </div>
+
+    <div class="controls">
+      <button id="prev-btn">◀ Anterior</button>
+      <button id="play-btn">▶ Iniciar</button>
+      <button id="next-btn">Siguiente ▶</button>
+      <button id="music-btn">♪ Música</button>
+    </div>
+
+    <div class="progress">
+      <div id="progress-bar"></div>
+    </div>
+    <p id="progress-text">0 / 0</p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
