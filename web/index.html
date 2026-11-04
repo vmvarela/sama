@@ -2,16 +2,25 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Yoga Minimal</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="tracker.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>SAMA</title>
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="SAMA">
   <meta name="theme-color" content="#f5f5f0">
+  <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./icons/icon-180.png">
+  <link rel="manifest" href="./manifest.json">
+  <link rel="stylesheet" href="./style.css">
+  <link rel="stylesheet" href="./tracker.css">
 </head>
 <body>
   <header>
-    <h1>Yoga Minimal</h1>
+    <div class="brand">
+      <img src="./icons/icon-180.png" alt="SAMA" class="brand-logo" width="36" height="36">
+      <h1 class="brand-title">SAMA</h1>
+    </div>
     <nav class="mode-nav">
       <button id="mode-yoga" class="mode-btn active">Yoga</button>
       <button id="mode-meditation" class="mode-btn">Meditación</button>
@@ -127,8 +136,8 @@
     </section>
   </main>
 
-  <script src="app.js"></script>
-  <script src="day-player.js"></script>
-  <script src="tracker.js"></script>
+  <script src="./app.js"></script>
+  <script src="./day-player.js"></script>
+  <script src="./tracker.js"></script>
 </body>
 </html>

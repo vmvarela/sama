@@ -11,31 +11,32 @@
 }
 
 .tracker-card {
-  background: #fff;
-  border-radius: 12px;
-  padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  background: var(--bg-card, #fff);
+  border-radius: 16px;
+  padding: 1.5rem 1.25rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04), 0 1px 3px rgba(0,0,0,0.02);
+  border: 1px solid var(--border-card, rgba(0,0,0,0.05));
 }
 
-.tracker-card h2 { font-size: 1.3rem; font-weight: 500; }
+.tracker-card h2 { font-size: 1.35rem; font-weight: 600; color: var(--text-main, #2a2a2a); }
 .tracker-meta { color: #666; font-size: 0.9rem; margin-top: 0.25rem; }
 .tracker-consejo { font-size: 1.1rem; line-height: 1.6; margin: 0.75rem 0; }
 
 .tracker-poses { list-style: none; margin-top: 0.75rem; }
-.tracker-pose { padding: 0.45rem 0; border-bottom: 1px solid #eee; line-height: 1.4; }
-.tracker-pose-img { display: block; width: 100%; max-width: 240px; height: auto; margin: 0.25rem 0 0.5rem; }
-.tracker-fig { color: #999; font-size: 0.8rem; }
-.tracker-tag { color: #6b8e6b; font-size: 0.8rem; }
+.tracker-pose { padding: 0.55rem 0; border-bottom: 1px solid #eee; line-height: 1.4; }
+.tracker-pose-img { display: block; width: 100%; max-width: 240px; height: auto; margin: 0.35rem auto 0.6rem; border-radius: 6px; mix-blend-mode: multiply; }
+.tracker-fig { color: #888; font-size: 0.82rem; }
+.tracker-tag { color: #6b8e6b; font-size: 0.82rem; font-weight: 500; }
 .tracker-dur { color: #666; font-size: 0.9rem; white-space: nowrap; }
 
 .tracker-empty, .tracker-warn { color: #888; font-size: 0.85rem; font-style: italic; margin-top: 0.75rem; }
 
 .tracker-block { margin-top: 1rem; }
-.tracker-block h3 { font-size: 0.95rem; font-weight: 500; color: #444; margin-bottom: 0.4rem; }
+.tracker-block h3 { font-size: 0.95rem; font-weight: 600; color: #444; margin-bottom: 0.4rem; }
 .tracker-notes { color: #444; font-size: 0.9rem; line-height: 1.5; padding-left: 1.2rem; }
 
-details summary { cursor: pointer; color: #444; font-size: 0.95rem; padding: 0.4rem 0; }
-.tracker-day { font-size: 0.9rem; font-weight: 500; color: #444; margin: 0.6rem 0 0.2rem; }
+details summary { cursor: pointer; color: #444; font-size: 0.95rem; padding: 0.5rem 0; }
+.tracker-day { font-size: 0.95rem; font-weight: 600; color: #444; margin: 0.6rem 0 0.2rem; }
 .tracker-apunte { white-space: pre-wrap; color: #444; font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.5rem; }
 
 .tracker-goto {
@@ -49,11 +50,13 @@ details summary { cursor: pointer; color: #444; font-size: 0.95rem; padding: 0.4
 }
 
 .tracker-goto input {
-  width: 5rem;
-  padding: 0.4rem;
+  width: 5.5rem;
+  min-height: 44px;
+  padding: 0.4rem 0.5rem;
   border: 1px solid #ccc;
-  border-radius: 6px;
+  border-radius: 8px;
   font-size: 0.95rem;
+  text-align: center;
 }
 
 .tracker-actions {
@@ -65,22 +68,27 @@ details summary { cursor: pointer; color: #444; font-size: 0.95rem; padding: 0.4
 }
 
 .tracker button {
-  padding: 0.6rem 1.2rem;
+  min-height: 44px;
+  padding: 0.65rem 1.25rem;
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   background: #2a2a2a;
   color: #fff;
-  font-size: 1rem;
+  font-size: 0.95rem;
+  font-weight: 500;
   cursor: pointer;
+  touch-action: manipulation;
+  transition: background-color 0.15s ease, transform 0.1s ease, opacity 0.15s ease;
 }
 
-.tracker button:active { opacity: 0.8; }
-.tracker button:disabled { opacity: 0.35; cursor: default; }
+.tracker button:active { opacity: 0.85; transform: scale(0.97); }
+.tracker button:disabled { opacity: 0.35; cursor: default; transform: none; }
 
 #tracker-bar {
   height: 100%;
   background: #6b8e6b;
   width: 0%;
+  border-radius: 999px;
   transition: width 0.3s;
 }
 
@@ -121,12 +129,15 @@ summary:focus-visible {
 .tracker-practice-btn {
   background: #3c5e3c !important;
   color: #fff;
-  font-size: 0.85rem !important;
+  font-size: 0.88rem !important;
   font-weight: 500;
-  padding: 0.35rem 0.8rem !important;
-  border-radius: 6px !important;
+  padding: 0.45rem 0.9rem !important;
+  border-radius: 8px !important;
   cursor: pointer;
-  min-height: 38px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .tracker-practice-btn:active {
@@ -158,7 +169,7 @@ summary:focus-visible {
 }
 
 .day-player-title {
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 600;
   color: #2a2a2a;
   margin-top: 0.15rem;
@@ -171,6 +182,9 @@ summary:focus-visible {
   padding: 0.2rem 0.5rem !important;
   min-width: 44px;
   min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   line-height: 1;
 }
 
@@ -186,6 +200,7 @@ summary:focus-visible {
   height: 100%;
   background: #6b8e6b;
   width: 0%;
+  border-radius: 999px;
   transition: width 0.3s;
 }
 
@@ -211,6 +226,7 @@ summary:focus-visible {
   width: auto;
   height: auto;
   object-fit: contain;
+  mix-blend-mode: multiply;
 }
 
 .day-player-pose-header {
@@ -243,7 +259,7 @@ summary:focus-visible {
   color: #333;
   background: #f9f9f7;
   padding: 0.6rem 0.8rem;
-  border-radius: 6px;
+  border-radius: 8px;
   margin: 0.6rem 0;
   border-left: 3px solid #6b8e6b;
 }
@@ -254,7 +270,7 @@ summary:focus-visible {
   color: #444;
   background: #fdfaf3;
   padding: 0.6rem 0.8rem;
-  border-radius: 6px;
+  border-radius: 8px;
   margin: 0.6rem 0;
   border-left: 3px solid #d4a359;
 }
@@ -317,7 +333,7 @@ summary:focus-visible {
 .day-player-range-options {
   background: #f7f7f3;
   border: 1px solid #e5e5df;
-  border-radius: 8px;
+  border-radius: 10px;
   padding: 0.75rem;
   margin: 0.75rem 0;
   text-align: center;
@@ -353,12 +369,19 @@ summary:focus-visible {
   align-items: center;
   min-height: 48px;
   padding: 0.65rem 1.1rem;
-  border-radius: 8px;
+  border-radius: 10px;
   font-size: 0.95rem;
   font-weight: 500;
   cursor: pointer;
   border: none;
   box-sizing: border-box;
+  touch-action: manipulation;
+  transition: transform 0.1s ease, opacity 0.15s ease;
+}
+
+.day-player-btn:active {
+  transform: scale(0.97);
+  opacity: 0.85;
 }
 
 .day-player-btn-primary {
@@ -403,7 +426,12 @@ summary:focus-visible {
   font-size: 0.85rem !important;
   text-decoration: underline;
   padding: 0.4rem 0.6rem !important;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   cursor: pointer;
+  touch-action: manipulation;
 }
 
 .day-player-link-btn:hover {

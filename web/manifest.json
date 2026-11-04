@@ -1,9 +1,20 @@
 {
-  "name": "Yoga Minimal",
-  "short_name": "Yoga",
-  "start_url": ".",
+  "name": "SAMA",
+  "short_name": "SAMA",
+  "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#f5f5f0",
   "theme_color": "#f5f5f0",
-  "icons": []
+  "icons": [
+    {
+      "src": "./icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
 }

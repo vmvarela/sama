@@ -1,29 +1,44 @@
-# Yoga Minimal
+# SAMA
 
-Minimalist yoga & meditation PWA with an embedded Zig HTTP server.
+PWA minimalista de yoga y meditación con servidor Zig embebido.
 
-- **Sequences**: yoga poses (wrist/ankle-friendly) + meditation (box breathing, 4-7-8, mindfulness).
-- **Music**: ambient drone via Web Audio API (toggle).
-- **Offline**: service worker caches all assets.
-- **Server**: single Zig binary serves the embedded frontend (no runtime dependencies).
+- **Secuencias**: posturas de yoga (amables con muñecas y tobillos) + meditación (box breathing, 4-7-8, mindfulness).
+- **Música**: drone ambiental con Web Audio API (conmutable).
+- **Sin conexión**: el service worker guarda los assets de la app.
+- **Un binario**: `zig build` genera `zig-out/bin/sama`, que incluye todo el frontend y las imágenes.
+- **Web pública**: `node scripts/build-pages.mjs` ensambla el sitio de GitHub Pages (solo contenido público).
 
-## Build & Run
+## Build y ejecución local
 
-Requires Zig 0.17.0.
+Requiere Zig 0.17.0.
 
 ```sh
 zig build
-./zig-out/bin/yoga
-# open http://localhost:8080
+./zig-out/bin/sama
+# abre http://localhost:8080
 ```
 
-## Structure
+El binario (~151 MB) no depende de `web/` en ejecución: puedes copiarlo a cualquier carpeta.
 
-- `src/main.zig` — HTTP server (thread per connection).
-- `src/web_assets.zig` — embedded web assets.
+## Sitio público (GitHub Pages)
+
+```sh
+node scripts/build-pages.mjs      # genera dist/pages/ a partir de una allowlist
+node --test tests/build-boundary.test.mjs
+```
+
+Se publica en `/sama/` mediante `.github/workflows/pages.yml`. No incluye el material privado
+(Plan 300 ni el libro). Detalles en [docs/ops.md](docs/ops.md).
+
+## Estructura
+
+- `src/main.zig` — servidor HTTP (un hilo por conexión).
+- `src/web_assets.zig` — tabla de assets embebidos (generada por `scripts/gen-web-assets.mjs`).
 - `web/` — frontend (HTML/CSS/JS/PNG/JSON).
-- `yoga_root.zig` — build anchor for `@embedFile` package path.
+- `scripts/` — generación de la tabla embebida y ensamblado del sitio público.
+- `tests/` — tests de frontera del build y del reproductor.
+- `yoga_root.zig` — ancla de build para `@embedFile` (el paquete debe contener `web/`).
 
-## License
+## Licencia
 
 MIT

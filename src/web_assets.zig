@@ -1,38 +1,181 @@
-//! Embedded web frontend for Yoga Minimal, served by main.zig's HTTP arm.
-//! @embedFile resolves relative to this file; this module lives in src/,
-//! so "../../web" points at the repo root web/ directory.
+//! GENERADO por scripts/gen-web-assets.mjs — no editar a mano.
+//! Tabla explícita de assets del binario privado (sirve main.zig).
 
 const std = @import("std");
 
 pub const Asset = struct {
+    path: []const u8,
     content: []const u8,
     content_type: []const u8,
 };
 
+pub const assets = [_]Asset{
+    .{ .path = "/app.js", .content = @embedFile("../web/app.js"), .content_type = "application/javascript" },
+    .{ .path = "/day-player.js", .content = @embedFile("../web/day-player.js"), .content_type = "application/javascript" },
+    .{ .path = "/icons/icon-180.png", .content = @embedFile("../web/icons/icon-180.png"), .content_type = "image/png" },
+    .{ .path = "/icons/icon-192.png", .content = @embedFile("../web/icons/icon-192.png"), .content_type = "image/png" },
+    .{ .path = "/icons/icon-512.png", .content = @embedFile("../web/icons/icon-512.png"), .content_type = "image/png" },
+    .{ .path = "/images-map.json", .content = @embedFile("../web/images-map.json"), .content_type = "application/json" },
+    .{ .path = "/images/adho-mukha-svanasana.png", .content = @embedFile("../web/images/adho-mukha-svanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/adho-mukha-vrksasana.png", .content = @embedFile("../web/images/adho-mukha-vrksasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/akarna-dhanurasana.png", .content = @embedFile("../web/images/akarna-dhanurasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/anantasana.png", .content = @embedFile("../web/images/anantasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/ardha-baddha-padma-paschimottanasana.png", .content = @embedFile("../web/images/ardha-baddha-padma-paschimottanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/ardha-chandrasana.png", .content = @embedFile("../web/images/ardha-chandrasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/ardha-matsyendrasana-i.png", .content = @embedFile("../web/images/ardha-matsyendrasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/ardha-matsyendrasana-ii.png", .content = @embedFile("../web/images/ardha-matsyendrasana-ii.png"), .content_type = "image/png" },
+    .{ .path = "/images/ardha-navasana.png", .content = @embedFile("../web/images/ardha-navasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/astavakrasana.png", .content = @embedFile("../web/images/astavakrasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/baddha-konasana.png", .content = @embedFile("../web/images/baddha-konasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/baddha-padmasana.png", .content = @embedFile("../web/images/baddha-padmasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/bakasana.png", .content = @embedFile("../web/images/bakasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/balasana.png", .content = @embedFile("../web/images/balasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/bhairavasana.png", .content = @embedFile("../web/images/bhairavasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/bharadvajasana-i.png", .content = @embedFile("../web/images/bharadvajasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/bhekasana.png", .content = @embedFile("../web/images/bhekasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/bhujangasana.png", .content = @embedFile("../web/images/bhujangasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/bhujapidasana.png", .content = @embedFile("../web/images/bhujapidasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/chakorasana.png", .content = @embedFile("../web/images/chakorasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/chakra-bandhasana.png", .content = @embedFile("../web/images/chakra-bandhasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/chakrasana.png", .content = @embedFile("../web/images/chakrasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/chaturanga-dandasana.png", .content = @embedFile("../web/images/chaturanga-dandasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/dhanurasana.png", .content = @embedFile("../web/images/dhanurasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/dwi-pada-koundinyasana.png", .content = @embedFile("../web/images/dwi-pada-koundinyasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/dwi-pada-sirsasana.png", .content = @embedFile("../web/images/dwi-pada-sirsasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/dwi-pada-viparita-dandasana.png", .content = @embedFile("../web/images/dwi-pada-viparita-dandasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/eka-pada-bakasana-i.png", .content = @embedFile("../web/images/eka-pada-bakasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/eka-pada-galavasana.png", .content = @embedFile("../web/images/eka-pada-galavasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/eka-pada-koundinyasana-i.png", .content = @embedFile("../web/images/eka-pada-koundinyasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/eka-pada-rajakapotasana-i.png", .content = @embedFile("../web/images/eka-pada-rajakapotasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/eka-pada-rajakapotasana-ii.png", .content = @embedFile("../web/images/eka-pada-rajakapotasana-ii.png"), .content_type = "image/png" },
+    .{ .path = "/images/eka-pada-sarvangasana.png", .content = @embedFile("../web/images/eka-pada-sarvangasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/eka-pada-setu-bandha-sarvangasana.png", .content = @embedFile("../web/images/eka-pada-setu-bandha-sarvangasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/eka-pada-sirsasana.png", .content = @embedFile("../web/images/eka-pada-sirsasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/eka-pada-urdhva-dhanurasana.png", .content = @embedFile("../web/images/eka-pada-urdhva-dhanurasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/galavasana-i.png", .content = @embedFile("../web/images/galavasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/ganda-bherundasana.png", .content = @embedFile("../web/images/ganda-bherundasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/garbha-pindasana.png", .content = @embedFile("../web/images/garbha-pindasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/garudasana.png", .content = @embedFile("../web/images/garudasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/gherandasana-i.png", .content = @embedFile("../web/images/gherandasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/gomukhasana.png", .content = @embedFile("../web/images/gomukhasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/halasana.png", .content = @embedFile("../web/images/halasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/hanumanasana.png", .content = @embedFile("../web/images/hanumanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/janu-sirsasana.png", .content = @embedFile("../web/images/janu-sirsasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/jathara-parivartanasana.png", .content = @embedFile("../web/images/jathara-parivartanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/kandasana.png", .content = @embedFile("../web/images/kandasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/kapinjalasana.png", .content = @embedFile("../web/images/kapinjalasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/kapotasana.png", .content = @embedFile("../web/images/kapotasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/karnapidasana.png", .content = @embedFile("../web/images/karnapidasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/kasyapasana.png", .content = @embedFile("../web/images/kasyapasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/krounchasana.png", .content = @embedFile("../web/images/krounchasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/kukkutasana.png", .content = @embedFile("../web/images/kukkutasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/kurmasana.png", .content = @embedFile("../web/images/kurmasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/laghu-vajrasana.png", .content = @embedFile("../web/images/laghu-vajrasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/malasana.png", .content = @embedFile("../web/images/malasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/mandalasana.png", .content = @embedFile("../web/images/mandalasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/marichyasana-i.png", .content = @embedFile("../web/images/marichyasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/marichyasana-iii.png", .content = @embedFile("../web/images/marichyasana-iii.png"), .content_type = "image/png" },
+    .{ .path = "/images/mayurasana.png", .content = @embedFile("../web/images/mayurasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/meditation.png", .content = @embedFile("../web/images/meditation.png"), .content_type = "image/png" },
+    .{ .path = "/images/mukta-hasta-sirsasana.png", .content = @embedFile("../web/images/mukta-hasta-sirsasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/mulabandhasana.png", .content = @embedFile("../web/images/mulabandhasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/nakrasana.png", .content = @embedFile("../web/images/nakrasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/natarajasana.png", .content = @embedFile("../web/images/natarajasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/niralamba-sarvangasana-i.png", .content = @embedFile("../web/images/niralamba-sarvangasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/padangustha-dhanurasana.png", .content = @embedFile("../web/images/padangustha-dhanurasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/padma-mayurasana.png", .content = @embedFile("../web/images/padma-mayurasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/padmasana.png", .content = @embedFile("../web/images/padmasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parighasana.png", .content = @embedFile("../web/images/parighasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/paripurna-navasana.png", .content = @embedFile("../web/images/paripurna-navasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parivrtta-janu-sirsasana.png", .content = @embedFile("../web/images/parivrtta-janu-sirsasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parivrtta-paschimottanasana.png", .content = @embedFile("../web/images/parivrtta-paschimottanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parivrtta-sarvangasana.png", .content = @embedFile("../web/images/parivrtta-sarvangasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parivrtta-trikonasana.png", .content = @embedFile("../web/images/parivrtta-trikonasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parivrttaikapada-sirsasana.png", .content = @embedFile("../web/images/parivrttaikapada-sirsasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parsva-bakasana.png", .content = @embedFile("../web/images/parsva-bakasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parsva-halasana.png", .content = @embedFile("../web/images/parsva-halasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parsva-kukkutasana.png", .content = @embedFile("../web/images/parsva-kukkutasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parsva-pindasana.png", .content = @embedFile("../web/images/parsva-pindasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parsva-sirsasana.png", .content = @embedFile("../web/images/parsva-sirsasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parsva-urdhva-padmasana.png", .content = @embedFile("../web/images/parsva-urdhva-padmasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parsvaika-pada-sarvangasana.png", .content = @embedFile("../web/images/parsvaika-pada-sarvangasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parsvaika-pada-sirsasana.png", .content = @embedFile("../web/images/parsvaika-pada-sirsasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parsvottanasana.png", .content = @embedFile("../web/images/parsvottanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/parvatasana.png", .content = @embedFile("../web/images/parvatasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/paryankasana.png", .content = @embedFile("../web/images/paryankasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/pasasana.png", .content = @embedFile("../web/images/pasasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/paschimottanasana.png", .content = @embedFile("../web/images/paschimottanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/pincha-mayurasana.png", .content = @embedFile("../web/images/pincha-mayurasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/pindasana-en-sarvangasana.png", .content = @embedFile("../web/images/pindasana-en-sarvangasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/pindasana-en-sirsasana.png", .content = @embedFile("../web/images/pindasana-en-sirsasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/prasarita-padottanasana-i.png", .content = @embedFile("../web/images/prasarita-padottanasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/purvottanasana.png", .content = @embedFile("../web/images/purvottanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/rajakapotasana.png", .content = @embedFile("../web/images/rajakapotasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/salabhasana.png", .content = @embedFile("../web/images/salabhasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/salamba-sarvangasana-i.png", .content = @embedFile("../web/images/salamba-sarvangasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/salamba-sarvangasana-iii.png", .content = @embedFile("../web/images/salamba-sarvangasana-iii.png"), .content_type = "image/png" },
+    .{ .path = "/images/salamba-sirsasana-i.png", .content = @embedFile("../web/images/salamba-sirsasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/salamba-sirsasana-ii.png", .content = @embedFile("../web/images/salamba-sirsasana-ii.png"), .content_type = "image/png" },
+    .{ .path = "/images/sama-icon.png", .content = @embedFile("../web/images/sama-icon.png"), .content_type = "image/png" },
+    .{ .path = "/images/samakonasana.png", .content = @embedFile("../web/images/samakonasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/savasana.png", .content = @embedFile("../web/images/savasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/setu-bandhasana.png", .content = @embedFile("../web/images/setu-bandhasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/simhasana-i.png", .content = @embedFile("../web/images/simhasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/simhasana-ii.png", .content = @embedFile("../web/images/simhasana-ii.png"), .content_type = "image/png" },
+    .{ .path = "/images/skandasana.png", .content = @embedFile("../web/images/skandasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/supta-bhekasana.png", .content = @embedFile("../web/images/supta-bhekasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/supta-konasana.png", .content = @embedFile("../web/images/supta-konasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/supta-kurmasana.png", .content = @embedFile("../web/images/supta-kurmasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/supta-padangusthasana.png", .content = @embedFile("../web/images/supta-padangusthasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/supta-trivikramasana.png", .content = @embedFile("../web/images/supta-trivikramasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/supta-virasana.png", .content = @embedFile("../web/images/supta-virasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/tadasana.png", .content = @embedFile("../web/images/tadasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/tolasana.png", .content = @embedFile("../web/images/tolasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/triang-mukhaikapada-paschimottanasana.png", .content = @embedFile("../web/images/triang-mukhaikapada-paschimottanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/trikonasana.png", .content = @embedFile("../web/images/trikonasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/upavistha-konasana.png", .content = @embedFile("../web/images/upavistha-konasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/urdhva-dandasana.png", .content = @embedFile("../web/images/urdhva-dandasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/urdhva-dhanurasana.png", .content = @embedFile("../web/images/urdhva-dhanurasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/urdhva-kukkutasana.png", .content = @embedFile("../web/images/urdhva-kukkutasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/urdhva-mukha-paschimottanasana-i.png", .content = @embedFile("../web/images/urdhva-mukha-paschimottanasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/urdhva-mukha-svanasana.png", .content = @embedFile("../web/images/urdhva-mukha-svanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/urdhva-padmasana.png", .content = @embedFile("../web/images/urdhva-padmasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/urdhva-prasarita-padasana.png", .content = @embedFile("../web/images/urdhva-prasarita-padasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/ustrasana.png", .content = @embedFile("../web/images/ustrasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/utkatasana.png", .content = @embedFile("../web/images/utkatasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/uttana-padasana.png", .content = @embedFile("../web/images/uttana-padasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/uttanasana.png", .content = @embedFile("../web/images/uttanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/utthita-parsvakonasana.png", .content = @embedFile("../web/images/utthita-parsvakonasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/vamadevasana-ii.png", .content = @embedFile("../web/images/vamadevasana-ii.png"), .content_type = "image/png" },
+    .{ .path = "/images/vasisthasana.png", .content = @embedFile("../web/images/vasisthasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/vatayanasana.png", .content = @embedFile("../web/images/vatayanasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/viparita-chakrasana.png", .content = @embedFile("../web/images/viparita-chakrasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/virabhadrasana-i.png", .content = @embedFile("../web/images/virabhadrasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/virabhadrasana-ii.png", .content = @embedFile("../web/images/virabhadrasana-ii.png"), .content_type = "image/png" },
+    .{ .path = "/images/virabhadrasana-iii.png", .content = @embedFile("../web/images/virabhadrasana-iii.png"), .content_type = "image/png" },
+    .{ .path = "/images/viranchyasana-ii.png", .content = @embedFile("../web/images/viranchyasana-ii.png"), .content_type = "image/png" },
+    .{ .path = "/images/virasana.png", .content = @embedFile("../web/images/virasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/visvamitrasana.png", .content = @embedFile("../web/images/visvamitrasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/vrischikasana-i.png", .content = @embedFile("../web/images/vrischikasana-i.png"), .content_type = "image/png" },
+    .{ .path = "/images/vrksasana.png", .content = @embedFile("../web/images/vrksasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/yoga-mudrasana.png", .content = @embedFile("../web/images/yoga-mudrasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/yogadandasana.png", .content = @embedFile("../web/images/yogadandasana.png"), .content_type = "image/png" },
+    .{ .path = "/images/yoganidrasana.png", .content = @embedFile("../web/images/yoganidrasana.png"), .content_type = "image/png" },
+    .{ .path = "/index.html", .content = @embedFile("../web/index.html"), .content_type = "text/html; charset=utf-8" },
+    .{ .path = "/manifest.json", .content = @embedFile("../web/manifest.json"), .content_type = "application/json" },
+    .{ .path = "/meditation.json", .content = @embedFile("../web/meditation.json"), .content_type = "application/json" },
+    .{ .path = "/sequences.json", .content = @embedFile("../web/sequences.json"), .content_type = "application/json" },
+    .{ .path = "/style.css", .content = @embedFile("../web/style.css"), .content_type = "text/css; charset=utf-8" },
+    .{ .path = "/sw.js", .content = @embedFile("../web/sw.js"), .content_type = "application/javascript" },
+    .{ .path = "/tracker.css", .content = @embedFile("../web/tracker.css"), .content_type = "text/css; charset=utf-8" },
+    .{ .path = "/tracker.js", .content = @embedFile("../web/tracker.js"), .content_type = "application/javascript" },
+    .{ .path = "/week-data.json", .content = @embedFile("../web/week-data.json"), .content_type = "application/json" },
+};
+
+/// Coincidencia exacta de ruta (sin decodificar): no hay acceso a disco ni
+/// separadores que validar. "/" es alias de /index.html.
 pub fn get(path: []const u8) ?Asset {
-    if (std.mem.eql(u8, path, "/") or std.mem.eql(u8, path, "/index.html"))
-        return .{ .content = @embedFile("../web/index.html"), .content_type = "text/html; charset=utf-8" };
-    if (std.mem.eql(u8, path, "/style.css"))
-        return .{ .content = @embedFile("../web/style.css"), .content_type = "text/css; charset=utf-8" };
-    if (std.mem.eql(u8, path, "/tracker.css"))
-        return .{ .content = @embedFile("../web/tracker.css"), .content_type = "text/css; charset=utf-8" };
-    if (std.mem.eql(u8, path, "/app.js"))
-        return .{ .content = @embedFile("../web/app.js"), .content_type = "application/javascript" };
-    if (std.mem.eql(u8, path, "/tracker.js"))
-        return .{ .content = @embedFile("../web/tracker.js"), .content_type = "application/javascript" };
-    if (std.mem.eql(u8, path, "/day-player.js"))
-        return .{ .content = @embedFile("../web/day-player.js"), .content_type = "application/javascript" };
-    if (std.mem.eql(u8, path, "/manifest.json"))
-        return .{ .content = @embedFile("../web/manifest.json"), .content_type = "application/json" };
-    if (std.mem.eql(u8, path, "/sequences.json"))
-        return .{ .content = @embedFile("../web/sequences.json"), .content_type = "application/json" };
-    if (std.mem.eql(u8, path, "/meditation.json"))
-        return .{ .content = @embedFile("../web/meditation.json"), .content_type = "application/json" };
-    if (std.mem.eql(u8, path, "/week-data.json"))
-        return .{ .content = @embedFile("../web/week-data.json"), .content_type = "application/json" };
-    if (std.mem.eql(u8, path, "/images-map.json"))
-        return .{ .content = @embedFile("../web/images-map.json"), .content_type = "application/json" };
-    if (std.mem.eql(u8, path, "/sw.js"))
-        return .{ .content = @embedFile("../web/sw.js"), .content_type = "application/javascript" };
+    const want = if (std.mem.eql(u8, path, "/")) "/index.html" else path;
+    for (assets) |a| if (std.mem.eql(u8, a.path, want)) return a;
     return null;
 }

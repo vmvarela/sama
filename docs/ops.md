@@ -1,23 +1,57 @@
-# Operación (yoga-minimal)
+# Operación (SAMA)
 
 Notas de operación; sin contenido del libro.
 
-## Servidor
+## Servidor local (binario privado)
 
-- `zig build` y `./zig-out/bin/yoga` — **siempre desde la raíz del repo**: las imágenes
-  se sirven desde `web/images/` con ruta relativa; desde otro directorio dan 404 en silencio.
-  Puerto fijo 8080 (editarlo solo en `src/main.zig`).
-- Persistente: `nohup ./zig-out/bin/yoga >> /tmp/yoga-server.log 2>&1 &` — los shells
+- `zig build` produce `zig-out/bin/sama` (~151 MB, ~5 s en build limpio). Ese binario
+  **contiene todos los assets** (HTML, CSS, JS, JSON privados, iconos e imágenes):
+  se puede copiar y ejecutar desde cualquier directorio, sin `web/` ni carpeta de imágenes.
+- Tras editar `web/`, **recompila**: no hay lectura de disco en ejecución.
+  `node scripts/gen-web-assets.mjs` regenera `src/web_assets.zig` si cambian los archivos
+  de `web/images/` o `web/icons/`; `--check` falla si la tabla está desactualizada.
+- Puerto fijo 8080 (editarlo solo en `src/main.zig`). Solo GET y HEAD; rutas exactas;
+  cualquier otra cosa da 404.
+- Persistente: `nohup ./zig-out/bin/sama >> /tmp/sama-server.log 2>&1 &` — los shells
   en background de la sesión mueren al reaprovecharse.
+- Pruebas: `zig build test` (ruta exacta, alias `/`, sin traversal) y
+  `node --test tests/build-boundary.test.mjs tests/day-player.test.js`.
 
-## Service worker
+## Sitio público (GitHub Pages)
 
-- `CACHE 'yoga-minimal-v9'`. Archivos de la app (`/`, `index.html`, `style.css`,
-  `app.js`, `tracker.js`, `tracker.css`, `day-player.js`, `sw.js`) → network-first:
-  se actualizan solos tras editar, **no hace falta bump**.
-  Datos (`manifest.json`, `sequences.json`,
-  `meditation.json`, `week-data.json`, `images-map.json`) → cache-first para offline:
-  bump solo si cambian de nombre. Imágenes: nunca precacheadas.
+- `node scripts/build-pages.mjs` ensambla `dist/pages/` (ignorado por git) desde una
+  **allowlist explícita** (`PUBLIC_ALLOWLIST` en el script). Nunca copia `web/` de forma
+  recursiva, rechaza symlinks y archivos inesperados, verifica hashes y escribe
+  `dist/pages.inventory.json` fuera del sitio.
+- Contenido público: `index.html` (desde `web/public.html`), `public-manifest.json`,
+  `sw.js` (desde `web/pages-sw.js`), `style.css`, `app.js`, `sequences.json`,
+  `meditation.json`, 3 iconos y solo las 9 imágenes de las secuencias públicas.
+- Excluido siempre: Plan 300 (`tracker*`, `day-player.js`, `week-data.json`,
+  `images-map.json`), PDF/Markdown del libro, `sama-icon.png`, otras imágenes,
+  binario Zig, cachés y `src/`.
+- El sitio debe funcionar bajo `/sama/`: nada de rutas absolutas `"/…"`; el build
+  falla si aparecen. `start_url` del manifiesto debe resolver a un archivo publicado.
+- Despliegue: `.github/workflows/pages.yml` en `master` (y manual). Permisos mínimos:
+  `contents: read` globales; `pages: write` e `id-token: write` solo en el job de deploy.
+  Solo sube `dist/pages`. Requiere en GitHub: Settings → Pages → Source «GitHub Actions».
+  Acciones: `checkout@v7`, `setup-node@v7`, `upload-pages-artifact@v5`, `deploy-pages@v5`.
+- Verificación local: `node --test tests/build-boundary.test.mjs` y luego el build.
+  Para probar la ruta real del proyecto, copia `dist/pages` a `<dir>/sama/` y sirve
+  `<dir>` (p. ej. `python3 -m http.server -d <dir> 8099`), y abre `/sama/`.
+
+## Service workers
+
+- **Privado** (`web/sw.js`): `CACHE 'sama-private-v10'`. Archivos de la app (`/`,
+  `index.html`, `style.css`, `tracker.css`, `app.js`, `tracker.js`, `day-player.js`,
+  `sw.js`) → network-first: se actualizan solos tras editar, **no hace falta bump**.
+  Datos (`manifest.json`, `sequences.json`, `meditation.json`, `week-data.json`,
+  `images-map.json`) e iconos → cache-first para offline: sube `CACHE` cuando cambien sus
+  bytes, porque el navegador no revalida estos archivos. Solo borra caches con prefijo
+  `sama-private-` o el antiguo `yoga-minimal-`.
+- **Público** (`web/pages-sw.js` → `sw.js`): `CACHE sama-public-<build>`, donde `<build>`
+  es un hash del contenido publicado, así cada despliegue crea caché nueva. Network-first
+  con respaldo de caché y precache relativo al scope (`/sama/`). Solo borra cachés
+  `sama-public-*`: el mismo origen `github.io` puede alojar otros proyectos.
 - Si el SW de un navegador queda en estado roto: DevTools → Application → Service
   Workers → Unregister, y recargar.
 - `self.skipWaiting()` + `clients.claim()` en el activate: sin eso los SW en cola
@@ -25,25 +59,38 @@ Notas de operación; sin contenido del libro.
 
 ## Tracker
 
-- Datos en `web/week-data.json` (300 semanas). Estado en localStorage
-  `yogaMinimal.tracker` `{v: 2, current, completed[]}`; cambiar esquema = subir `v` (resetea).
+- Datos en `web/week-data.json` (300 semanas, solo local, excluido de git y del sitio
+  público). Estado en localStorage `yogaMinimal.tracker` `{v: 2, current, completed[]}`;
+  cambiar esquema = subir `v` (resetea). **La clave conserva el nombre antiguo a
+  propósito**: renombrarla reiniciaría el progreso guardado en el navegador.
 - La vista de inicio es el plan (Semana 1).
+
+## Reproductor diario
+
+- «Practicar este día» usa `day-player.js`, separado del temporizador breve de yoga.
+  Los tiempos exactos se cronometran; los rangos requieren elegir mínimo o máximo;
+  repeticiones y pasos sin tiempo son manuales. `per_side` crea dos pasos completos,
+  etiquetados «lado 1/2» sin inferir izquierda/derecha.
+- Cerrar una práctica pausada permite reabrirla en el mismo paso. Terminarla no marca
+  la semana como completada; cambiar de modo o esconder la pestaña pausa el temporizador.
 
 ## Imágenes
 
-- PNGs servidos desde disco por `src/main.zig` (slug `[a-z0-9-]` + `.png`, máx 16 MB,
-  404 si no válido). `web/images-map.json` mapea nombre de postura → slug; si falta el
+- PNGs embebidos en el binario privado; la tabla explícita está en `src/web_assets.zig`
+  (generada). `web/images-map.json` mapea nombre de postura → slug; si falta el
   PNG, la UI muestra solo texto.
 - Algunas salidas del generador son RGBA transparentes aunque se pida fondo blanco;
   algunos visores las muestran sobre negro. Antes de servirlas, compónlas sobre blanco
   y guárdalas como RGB para mantener el fondo uniforme.
 - Reanudar generación pendiente: calcular slugs únicos de `images-map.json` menos PNGs
   existentes en `web/images/`; el número pendiente cambia con cada lote.
+- Las imágenes del corpus completo pesan ~148 MB: no se precachean en el SW público
+  más allá de las 9 de las secuencias públicas.
 
 ## Datos de uso personal (NO PUBLICAR)
 
 Contenido derivado de obra con copyright, uso estrictamente personal. Excluidos de git
-vía `.git/info/exclude` (no añadir al índice nunca):
+vía `.git/info/exclude` (no añadir al índice nunca) y del sitio público por la allowlist:
 
 - `web/week-data.json`
 - `Luz-sobre-el-Yoga.pdf`

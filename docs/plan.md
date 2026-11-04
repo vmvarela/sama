@@ -1,28 +1,35 @@
-# Plan: Yoga Minimal → Maestro Virtual Completo
+# Plan de producto: SAMA
+
+SAMA ofrece secuencias minimalistas de yoga y meditación en dos formatos: un
+ejecutable Zig local, autocontenido, y una PWA pública desplegable en GitHub Pages.
+Pages publica solo Yoga y Meditación; el plan personal de 300 semanas no se publica.
 
 ## Principio de assets: generados, no sintéticos
 Todo audio, música e imágenes debe ser **generado** (IA o herramientas), nunca sintético en runtime ni externo:
-- **Imágenes**: generadas con IA (estilo minimalista línea). Ya: 9 posturas.
+- **Imágenes**: ilustraciones generadas con IA en estilo lineal. El binario local
+  incluye la biblioteca completa; Pages contiene solo las imágenes de sus secuencias.
 - **Música**: archivos de audio generados (no drone sintético). Pendiente.
 - **Audio (voz)**: archivos TTS generados (no síntesis en runtime). Pendiente.
 
 El drone sintético actual es placeholder hasta tener música generada.
 - PWA estática (HTML/CSS/JS) con secuencias de yoga y meditación.
-- Servidor Zig embebido (un binario, sin deps).
+- Servidor Zig embebido: un ejecutable local que incluye frontend e imágenes.
 - Música: drone sintético (placeholder) → reemplazar por música generada.
-- Imágenes minimalistas (IA) de 9 posturas.
+- Tracker personal de 300 semanas, excluido del sitio público.
 - Registrado como proyecto opensource.
+- Web pública en GitHub Pages (`/sama/`) con solo el contenido público.
 
-## Fase 1 — Publicación (siguiente)
-- Crear repo remoto GitHub y push inicial.
-- CI: build Zig en Ubuntu/macOS/Windows.
-- README con screenshots y badges.
-- Verificar `zig build` y `zig build test` en CI.
+## Fase 1 — Distribución
+- [x] Renombrar el proyecto a SAMA.
+- [x] Generar el ejecutable local autocontenido.
+- [x] Preparar el ensamblador y workflow de GitHub Pages con allowlist pública.
+- [ ] Publicar desde GitHub y verificar la instalación desde Safari en un iPhone real.
+- [ ] Añadir CI multiplataforma para el ejecutable Zig.
 
 ## Fase 2 — Mejora de contenido
 - Ampliar biblioteca de posturas (30+ imágenes con estilo consistente).
 - Más secuencias: yin, restaurativo, fuerza, flexibilidad.
-- Plan semanal integrado en la app (JSON de rutina).
+- Ampliar y revisar el tracker personal sin incorporar ese contenido a Pages.
 - Adaptaciones por articulación configurables (muñecas/tobillos/espalda).
 
 ## Fase 3 — IA integrada
