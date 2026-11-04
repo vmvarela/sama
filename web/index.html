@@ -44,6 +44,68 @@
     <p id="progress-text">0 / 0</p>
 
     <section id="tracker-view" class="tracker" hidden>
+      <div id="day-player-card" class="tracker-card day-player" hidden tabindex="-1" aria-label="Reproductor de práctica diaria">
+        <div class="day-player-header">
+          <div>
+            <span id="day-player-kicker" class="day-player-kicker">Práctica diaria</span>
+            <h3 id="day-player-heading" class="day-player-title">Día 1</h3>
+          </div>
+          <button type="button" id="day-player-close" class="day-player-close" aria-label="Cerrar práctica">✕</button>
+        </div>
+
+        <div class="day-player-progress-wrap">
+          <div class="progress"><div id="day-player-bar"></div></div>
+          <p id="day-player-counter" class="day-player-step-counter">Paso 1</p>
+        </div>
+
+        <div id="day-player-live" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+
+        <div id="day-player-pose-area">
+          <div id="day-player-image-wrap" class="day-player-image-wrap"></div>
+          <div class="day-player-pose-header">
+            <h4 id="day-player-pose-name"></h4>
+            <span id="day-player-pose-fig" class="tracker-fig"></span>
+            <span id="day-player-side" class="day-player-badge" hidden></span>
+          </div>
+
+          <p id="day-player-instruction" class="day-player-instruction" hidden></p>
+          <div id="day-player-notes" class="day-player-notes" hidden></div>
+
+          <div class="day-player-timer-block">
+            <div id="day-player-time" class="day-player-time" aria-label="Tiempo restante">00:00</div>
+            <p id="day-player-timing-desc" class="day-player-timing-desc"></p>
+            <span id="day-player-status" class="day-player-status-badge" hidden></span>
+          </div>
+
+          <div id="day-player-range-options" class="day-player-range-options" hidden>
+            <span class="day-player-range-label">Selecciona duración:</span>
+            <div class="day-player-range-buttons">
+              <button type="button" id="day-player-range-min" class="day-player-btn day-player-btn-secondary"></button>
+              <button type="button" id="day-player-range-max" class="day-player-btn day-player-btn-secondary"></button>
+            </div>
+          </div>
+
+          <div class="day-player-controls">
+            <button type="button" id="day-player-prev" class="day-player-btn day-player-btn-nav" aria-label="Paso anterior">◀ Anterior</button>
+            <button type="button" id="day-player-action" class="day-player-btn day-player-btn-primary">▶ Iniciar</button>
+            <button type="button" id="day-player-next" class="day-player-btn day-player-btn-nav" aria-label="Paso siguiente">Siguiente ▶</button>
+          </div>
+
+          <div class="day-player-footer">
+            <button type="button" id="day-player-finish" class="day-player-link-btn">Terminar práctica</button>
+          </div>
+        </div>
+
+        <div id="day-player-finished-area" class="day-player-finished" hidden>
+          <div class="day-player-finished-icon" aria-hidden="true">✓</div>
+          <h4>¡Práctica completada!</h4>
+          <p class="tracker-meta">Has terminado todas las posturas del día.</p>
+          <div class="tracker-actions">
+            <button type="button" id="day-player-finished-close" class="day-player-btn day-player-btn-primary">Volver al plan</button>
+          </div>
+        </div>
+      </div>
+
       <div class="tracker-card">
         <h2 id="tracker-title">Plan 300</h2>
         <p id="tracker-course" class="tracker-meta"></p>
@@ -66,6 +128,7 @@
   </main>
 
   <script src="app.js"></script>
+  <script src="day-player.js"></script>
   <script src="tracker.js"></script>
 </body>
 </html>

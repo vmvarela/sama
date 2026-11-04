@@ -12,9 +12,10 @@ Notas de operación; sin contenido del libro.
 
 ## Service worker
 
-- `CACHE 'yoga-minimal-v6'`. Archivos de la app (`/`, `index.html`, `style.css`,
-  `app.js`, `tracker.js`, `tracker.css`, `sw.js`) → network-first: se actualizan solos
-  tras editar, **no hace falta bump**. Datos (`manifest.json`, `sequences.json`,
+- `CACHE 'yoga-minimal-v9'`. Archivos de la app (`/`, `index.html`, `style.css`,
+  `app.js`, `tracker.js`, `tracker.css`, `day-player.js`, `sw.js`) → network-first:
+  se actualizan solos tras editar, **no hace falta bump**.
+  Datos (`manifest.json`, `sequences.json`,
   `meditation.json`, `week-data.json`, `images-map.json`) → cache-first para offline:
   bump solo si cambian de nombre. Imágenes: nunca precacheadas.
 - Si el SW de un navegador queda en estado roto: DevTools → Application → Service
@@ -46,3 +47,5 @@ vía `.git/info/exclude` (no añadir al índice nunca):
 
 - `web/week-data.json`
 - `Luz-sobre-el-Yoga.pdf`
+- `Luz-sobre-el-Yoga.md`
+- `125593660-iyengar-luz-sobre-el-yoga-yoga-dipika-pdf.pdf`

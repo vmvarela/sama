@@ -1,5 +1,5 @@
-const CACHE = 'yoga-minimal-v8';
-const SELF_UPDATE = ['/', '/index.html', '/style.css', '/app.js', '/tracker.js', '/tracker.css', '/sw.js'];
+const CACHE = 'yoga-minimal-v9';
+const SELF_UPDATE = ['/', '/index.html', '/style.css', '/app.js', '/tracker.js', '/tracker.css', '/day-player.js', '/sw.js'];
 const OFFLINE_DATA = ['/manifest.json', '/sequences.json', '/meditation.json', '/week-data.json', '/images-map.json'];
 const ASSETS = [...SELF_UPDATE, ...OFFLINE_DATA];
 

@@ -20,6 +20,8 @@ pub fn get(path: []const u8) ?Asset {
         return .{ .content = @embedFile("../web/app.js"), .content_type = "application/javascript" };
     if (std.mem.eql(u8, path, "/tracker.js"))
         return .{ .content = @embedFile("../web/tracker.js"), .content_type = "application/javascript" };
+    if (std.mem.eql(u8, path, "/day-player.js"))
+        return .{ .content = @embedFile("../web/day-player.js"), .content_type = "application/javascript" };
     if (std.mem.eql(u8, path, "/manifest.json"))
         return .{ .content = @embedFile("../web/manifest.json"), .content_type = "application/json" };
     if (std.mem.eql(u8, path, "/sequences.json"))
