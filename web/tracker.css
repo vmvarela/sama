@@ -1,0 +1,85 @@
+/* Plan 300: reutiliza la estética de style.css (fondo #f5f5f0, cards 480px, botones oscuros) */
+
+[hidden], .is-hidden { display: none !important; }
+
+.tracker {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tracker-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+.tracker-card h2 { font-size: 1.3rem; font-weight: 500; }
+.tracker-meta { color: #666; font-size: 0.9rem; margin-top: 0.25rem; }
+.tracker-consejo { font-size: 1.1rem; line-height: 1.6; margin: 0.75rem 0; }
+
+.tracker-poses { list-style: none; margin-top: 0.75rem; }
+.tracker-pose { padding: 0.45rem 0; border-bottom: 1px solid #eee; line-height: 1.4; }
+.tracker-pose-img { display: block; width: 100%; max-width: 240px; height: auto; margin: 0.25rem 0 0.5rem; }
+.tracker-fig { color: #999; font-size: 0.8rem; }
+.tracker-tag { color: #6b8e6b; font-size: 0.8rem; }
+.tracker-dur { color: #666; font-size: 0.9rem; white-space: nowrap; }
+
+.tracker-empty, .tracker-warn { color: #888; font-size: 0.85rem; font-style: italic; margin-top: 0.75rem; }
+
+.tracker-block { margin-top: 1rem; }
+.tracker-block h3 { font-size: 0.95rem; font-weight: 500; color: #444; margin-bottom: 0.4rem; }
+.tracker-notes { color: #444; font-size: 0.9rem; line-height: 1.5; padding-left: 1.2rem; }
+
+details summary { cursor: pointer; color: #444; font-size: 0.95rem; padding: 0.4rem 0; }
+.tracker-day { font-size: 0.9rem; font-weight: 500; color: #444; margin: 0.6rem 0 0.2rem; }
+.tracker-apunte { white-space: pre-wrap; color: #444; font-size: 0.9rem; line-height: 1.5; margin-bottom: 0.5rem; }
+
+.tracker-goto {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.tracker-goto input {
+  width: 5rem;
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.tracker-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.tracker button {
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  background: #2a2a2a;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.tracker button:active { opacity: 0.8; }
+.tracker button:disabled { opacity: 0.35; cursor: default; }
+
+#tracker-bar {
+  height: 100%;
+  background: #6b8e6b;
+  width: 0%;
+  transition: width 0.3s;
+}
