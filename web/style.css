@@ -299,9 +299,8 @@ summary:focus-visible {
   outline-offset: 2px;
 }
 
-/* Ajustes para móvil en vertical: cabecera y tarjeta compactas para que
-   la ilustración, el título, la instrucción y todos los controles quepan
-   en pantalla sin desplazamiento. */
+/* Ajustes para móvil en vertical: cabecera y tarjeta compactas, con la
+   barra de controles fijada al fondo para que siempre quede a la vista. */
 @media (max-width: 480px) and (orientation: portrait) {
   header {
     padding-top: max(0.5rem, var(--sat));
@@ -338,6 +337,8 @@ summary:focus-visible {
   main {
     padding-top: 0.6rem;
     gap: 0.55rem;
+    /* reserva el hueco de la barra de controles fijada abajo (2 filas ≈ 110px + zona segura) */
+    padding-bottom: calc(7.5rem + var(--sab));
   }
 
   .pose-card {
@@ -364,14 +365,38 @@ summary:focus-visible {
     margin-bottom: 0.3rem;
   }
 
+  /* Barra de controles anclada al fondo: la tarjeta puede desplazarse,
+     pero Anterior/Iniciar/Siguiente y Música siempre visibles. */
   .controls {
-    gap: 0.5rem;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 20;
+    max-width: none;
+    background: rgba(245, 245, 240, 0.97);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border-subtle);
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.04);
+    padding-top: 0.45rem;
+    padding-right: max(0.6rem, var(--sar));
+    padding-bottom: calc(0.45rem + var(--sab));
+    padding-left: max(0.6rem, var(--sal));
+    gap: 0.4rem;
   }
 
   .controls button {
-    min-height: 42px;
-    padding: 0.5rem 0.9rem;
-    font-size: 0.88rem;
+    flex: 1 1 30%;
+    min-height: 44px;
+    padding: 0.45rem 0.4rem;
+    font-size: 0.85rem;
+  }
+
+  /* el botón de música va solo en la segunda fila, compacto y centrado */
+  #music-btn {
+    flex: 0 0 auto;
+    min-width: 110px;
   }
 }
 
