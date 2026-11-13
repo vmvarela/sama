@@ -1,7 +1,8 @@
 name: Pages (público)
 
-# Publica solo el sitio público ensamblado por scripts/build-pages.mjs (allowlist).
-# Nunca sube el binario Zig ni datos privados (week-data.json, PDFs, Markdown).
+# Publica el sitio ensamblado por scripts/build-pages.mjs: la app completa, incluido
+# el Plan 300 (decisión del 2026-11-13). Nunca sube el binario Zig, PDFs, Markdown
+# del libro ni las fuentes de audio.
 
 on:
   push:

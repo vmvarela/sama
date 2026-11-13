@@ -1,9 +1,9 @@
 #!/usr/bin/env node
-// Ensambla el sitio público de GitHub Pages (SAMA) desde una allowlist explícita.
+// Ensambla el sitio público de GitHub Pages (SAMA): la app completa, desde una lista explícita.
 // Uso: node scripts/build-pages.mjs (siempre genera dist/pages dentro del repo).
 // Las opciones root/out existen solo en la API de test, no en el CLI destructivo.
-// Nunca copia web/ de forma recursiva, no ejecuta Zig y no lee datos privados.
-// Inventario con hashes: <out>.inventory.json (fuera del sitio publicado).
+// Nunca copia web/ de forma recursiva ni ejecuta Zig; el libro (PDF/Markdown) queda fuera.
+// Inventario con hashes y tamaño: <out>.inventory.json (fuera del sitio publicado).
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -14,33 +14,40 @@ const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 // Contrato público: origen (relativo a --root) → destino dentro del sitio.
 // `build-id` marca el único archivo que se transforma (sustituye __BUILD__).
-export const PUBLIC_POSE_SLUGS = [
-  'tadasana', 'uttanasana', 'adho-mukha-svanasana', 'virabhadrasana-i', 'virabhadrasana-ii',
-  'trikonasana', 'setu-bandhasana', 'balasana', 'meditation',
-];
+// `data` marca un JSON de datos cuyo texto libre no es un archivo de referencias.
+const PUBLIC_IMAGES = fs.readdirSync(path.join(REPO, 'web', 'images'))
+  .filter(f => f.endsWith('.png')).sort()
+  .map(f => ({ from: `web/images/${f}`, to: `images/${f}` }));
 
 export const PUBLIC_ALLOWLIST = [
-  { from: 'web/public.html', to: 'index.html' },
-  { from: 'web/public-manifest.json', to: 'public-manifest.json' },
+  { from: 'web/index.html', to: 'index.html' },
   { from: 'web/pages-sw.js', to: 'sw.js', transform: 'build-id' },
   { from: 'web/style.css', to: 'style.css' },
+  { from: 'web/tracker.css', to: 'tracker.css' },
   { from: 'web/app.js', to: 'app.js' },
+  { from: 'web/tracker.js', to: 'tracker.js' },
+  { from: 'web/day-player.js', to: 'day-player.js' },
+  { from: 'web/manifest.json', to: 'manifest.json' },
+  { from: 'web/sequences.json', to: 'sequences.json' },
+  { from: 'web/meditation.json', to: 'meditation.json' },
+  { from: 'web/images-map.json', to: 'images-map.json' },
+  { from: 'web/week-data.json', to: 'week-data.json', data: true },
   { from: 'web/audio/handpan.mp3', to: 'audio/handpan.mp3' },
   { from: 'web/audio/transition.mp3', to: 'audio/transition.mp3' },
   { from: 'web/audio/gong.mp3', to: 'audio/gong.mp3' },
-  { from: 'web/sequences.json', to: 'sequences.json' },
-  { from: 'web/meditation.json', to: 'meditation.json' },
   { from: 'web/icons/icon-180.png', to: 'icons/icon-180.png' },
   { from: 'web/icons/icon-192.png', to: 'icons/icon-192.png' },
   { from: 'web/icons/icon-512.png', to: 'icons/icon-512.png' },
-  ...PUBLIC_POSE_SLUGS.map(s => ({ from: `web/images/${s}.png`, to: `images/${s}.png` })),
+  ...PUBLIC_IMAGES,
 ];
 
-// Nada de esto puede aparecer en el sitio público (Plan 300, PDF/Markdown, binario, caché).
-const FORBIDDEN = /(tracker|day-player|week-data|images-map|sama-icon|\.pdf$|\.md$|\.zig|\.zon|\.o$|\.a$|\.log$|\.(flac|ogg|wav)$|cache|DS_Store|\.git)/i;
+// Nada de esto puede publicarse: libro (PDF/Markdown), código Zig, binarios, fuentes de
+// audio, ficheros de caché y metadatos de sistema. El Plan 300 y sus datos sí se publican.
+const FORBIDDEN = /(\.pdf$|\.md$|\.zig|\.zon|\.o$|\.a$|\.log$|\.mjs$|\.(flac|ogg|wav)$|cache|DS_Store|\.git)/i;
 const TEXT_EXT = /\.(html|css|js|json|webmanifest)$/;
-// Referencias absolutas a la raíz del origen (rompen en /sama/): "/x", '/x', `/x`, url(/x), =/x
-const ABSOLUTE_REF = /(["'`(]|=)\/(?![\/*])/;
+// Referencias absolutas a la raíz del origen (rompen en /sama/): "/x", '/x', `/x`, url(/x), =/x.
+// `\\` en la exclusión: `(/\s…` es el inicio de una expresión regular, no una ruta.
+const ABSOLUTE_REF = /(["'`(]|=)\/(?![\\/*])/;
 
 const sha256 = buf => crypto.createHash('sha256').update(buf).digest('hex');
 
@@ -162,7 +169,7 @@ export function buildPages({ root = REPO, out = path.join(REPO, 'dist', 'pages')
       if (hits !== 1) throw new Error(`${s.from}: debe contener __BUILD__ exactamente una vez`);
       bytes = Buffer.from(text.replace('__BUILD__', buildId), 'utf8');
     }
-    if (TEXT_EXT.test(s.to)) {
+    if (TEXT_EXT.test(s.to) && !s.data) {
       const text = bytes.toString('utf8');
       const m = text.split('\n').find(line => ABSOLUTE_REF.test(line));
       if (m) throw new Error(`${s.from}: referencia absoluta a la raíz (rompe en /<repo>/): ${m.trim().slice(0, 120)}`);
@@ -179,8 +186,10 @@ export function buildPages({ root = REPO, out = path.join(REPO, 'dist', 'pages')
   }
 
   // 4) Verificar la salida: inventario exacto, sin symlinks y hashes iguales.
+  // .sort() a secas: el orden del recorrido de directorios difiere del lexicográfico
+  // (images/… vs images-map.json: '/' 0x2F > '-' 0x2D).
   const expected = files.map(f => f.to).sort();
-  const actual = walk(out);
+  const actual = walk(out).sort();
   if (JSON.stringify(actual) !== JSON.stringify(expected)) {
     throw new Error(`inventario inesperado:\n  esperado ${expected.join(', ')}\n  real ${actual.join(', ')}`);
   }
@@ -189,8 +198,10 @@ export function buildPages({ root = REPO, out = path.join(REPO, 'dist', 'pages')
     if (sha256(fs.readFileSync(path.join(out, f.to))) !== f.sha256) throw new Error(`hash distinto: ${f.to}`);
   }
 
+  const totalBytes = files.reduce((n, f) => n + f.bytes.length, 0);
   const inventory = {
     build: buildId,
+    totalBytes,
     files: files.map(f => ({ path: f.to, source: f.from, bytes: f.bytes.length, sha256: f.sha256 })),
   };
   fs.writeFileSync(`${out}.inventory.json`, JSON.stringify(inventory, null, 2) + '\n');
@@ -200,6 +211,8 @@ export function buildPages({ root = REPO, out = path.join(REPO, 'dist', 'pages')
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   if (process.argv.length > 2) throw new Error('Este comando no acepta rutas personalizadas; la salida es dist/pages');
   const inv = buildPages();
-  const total = inv.files.reduce((n, f) => n + f.bytes, 0);
+  const total = inv.totalBytes;
   console.log(`sitio público build ${inv.build}: ${inv.files.length} archivos, ${(total / 1048576).toFixed(2)} MiB`);
+  // shortcut: aviso simple de peso; Pages no tiene límite duro, pero un sitio grande lenta la primera carga.
+  if (total > 200 * 1048576) console.warn(`⚠ tamaño total ${(total / 1048576).toFixed(2)} MiB > 200 MB: revisa el peso de las imágenes publicadas`);
 }

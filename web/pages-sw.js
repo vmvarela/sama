@@ -7,13 +7,18 @@ const PREFIX = 'sama-public-';
 const CACHE = PREFIX + BUILD;
 const SCOPE = self.registration.scope;
 const PRECACHE = [
-  './', './index.html', './public-manifest.json', './style.css', './app.js',
-  './sequences.json', './meditation.json',
+  // shell
+  './', './index.html', './style.css', './tracker.css', './app.js', './tracker.js',
+  './day-player.js', './manifest.json',
+  // datos (week-data ≈744 KB)
+  './sequences.json', './meditation.json', './images-map.json', './week-data.json',
+  // sonido e iconos
   './audio/handpan.mp3', './audio/transition.mp3', './audio/gong.mp3',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png',
-  './images/tadasana.png', './images/uttanasana.png', './images/adho-mukha-svanasana.png',
-  './images/virabhadrasana-i.png', './images/virabhadrasana-ii.png', './images/trikonasana.png',
-  './images/setu-bandhasana.png', './images/balasana.png', './images/meditation.png',
+  // shortcut: las imágenes (~148 MB) NO se precachean: el fetch de abajo las guarda bajo
+  // demanda al usarse. La caché puede llegar a ~148 MB si se recorren todas las posturas;
+  // conviene una política de cuota/LRU (p. ej. purgar las imágenes más antiguas al superar
+  // un límite) cuando el almacenamiento del navegador sea una preocupación.
 ].map(p => new URL(p, SCOPE).href);
 
 self.addEventListener('install', e => {

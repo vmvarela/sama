@@ -1,4 +1,4 @@
-// Plan 300: seguimiento semanal del programa. Datos en /week-data.json.
+// Plan 300: seguimiento semanal del programa. Datos en week-data.json (relativo al documento).
 (() => {
   'use strict';
 
@@ -658,7 +658,7 @@
 
   const getJson = url => fetch(url).then(r => { if (!r.ok) throw new Error(`HTTP ${r.status}`); return r.json(); });
 
-  Promise.all([getJson('/week-data.json'), getJson('/images-map.json').catch(() => ({}))])
+  Promise.all([getJson('week-data.json'), getJson('images-map.json').catch(() => ({}))])
     .then(([json, map]) => { data = json; imageMap = map.poses || {}; render(); setPlanMode(true); })
     .catch(() => { els.week.textContent = 'No se pudieron cargar los datos del programa.'; });
 })();

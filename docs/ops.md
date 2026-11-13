@@ -21,16 +21,19 @@ Notas de operación; sin contenido del libro.
 ## Sitio público (GitHub Pages)
 
 - `node scripts/build-pages.mjs` ensambla `dist/pages/` (ignorado por git) desde una
-  **allowlist explícita** (`PUBLIC_ALLOWLIST` en el script). Nunca copia `web/` de forma
-  recursiva, rechaza symlinks y archivos inesperados, verifica hashes y escribe
-  `dist/pages.inventory.json` fuera del sitio.
-- Contenido público: `index.html` (desde `web/public.html`), `public-manifest.json`,
-  `sw.js` (desde `web/pages-sw.js`), `style.css`, `app.js`, `sequences.json`,
-  `meditation.json`, 3 iconos, solo las 9 imágenes de las secuencias públicas y los 3 MP3
-  del sonido (`audio/handpan.mp3`, `audio/transition.mp3`, `audio/gong.mp3`).
-- Excluido siempre: Plan 300 (`tracker*`, `day-player.js`, `week-data.json`,
-  `images-map.json`), PDF/Markdown del libro, `sama-icon.png`, otras imágenes,
-  fuentes de audio (FLAC/OGG en `assets/handpan/`), binario Zig, cachés y `src/`.
+  **lista explícita** (`PUBLIC_ALLOWLIST` en el script): la app completa, nunca una copia
+  recursiva de `web/`. Rechaza symlinks y archivos inesperados, verifica hashes y escribe
+  `dist/pages.inventory.json` (con `totalBytes`) fuera del sitio.
+- Contenido público: `index.html` (la app completa, desde `web/index.html`), `manifest.json`,
+  `sw.js` (desde `web/pages-sw.js`), `style.css`, `tracker.css`, `app.js`, `tracker.js`,
+  `day-player.js`, `sequences.json`, `meditation.json`, `images-map.json`,
+  `week-data.json` (≈744 KB), los 3 MP3 del sonido, los 3 iconos y las 145 imágenes de
+  `web/images/` (~148 MB). Total: **163 archivos, ~149 MiB**; el build avisa en el log si
+  supera 200 MB.
+- `week-data.json` se publica por **decisión del 2026-11-13** (antes figuraba en la lista
+  de datos privados que el sitio excluía).
+- Excluido siempre: el libro (PDF/Markdown), código Zig, binarios, fuentes de audio
+  (FLAC/OGG en `assets/handpan/`), ficheros de caché y `src/` (regla `FORBIDDEN`).
 - El sitio debe funcionar bajo `/sama/`: nada de rutas absolutas `"/…"`; el build
   falla si aparecen. `start_url` del manifiesto debe resolver a un archivo publicado.
 - Despliegue: `.github/workflows/pages.yml` en `master` (y manual). Permisos mínimos:
@@ -52,8 +55,10 @@ Notas de operación; sin contenido del libro.
   `sama-private-` o el antiguo `yoga-minimal-`.
 - **Público** (`web/pages-sw.js` → `sw.js`): `CACHE sama-public-<build>`, donde `<build>`
   es un hash del contenido publicado, así cada despliegue crea caché nueva. Network-first
-  con respaldo de caché y precache relativo al scope (`/sama/`). Solo borra cachés
-  `sama-public-*`: el mismo origen `github.io` puede alojar otros proyectos.
+  con respaldo de caché y precache relativo al scope (`/sama/`): shell, datos (incluido
+  `week-data.json`), iconos y MP3. **Las imágenes no se precachean**: se guardan en caché
+  bajo demanda al usarse (ver «Imágenes»). Solo borra cachés `sama-public-*`: el mismo
+  origen `github.io` puede alojar otros proyectos.
 - Si el SW de un navegador queda en estado roto: DevTools → Application → Service
   Workers → Unregister, y recargar.
 - `self.skipWaiting()` + `clients.claim()` en el activate: sin eso los SW en cola
@@ -61,8 +66,8 @@ Notas de operación; sin contenido del libro.
 
 ## Tracker
 
-- Datos en `web/week-data.json` (300 semanas, solo local, excluido de git y del sitio
-  público). Estado en localStorage `yogaMinimal.tracker` `{v: 2, current, completed[]}`;
+- Datos en `web/week-data.json` (300 semanas; en el sitio público desde el 2026-11-13 por
+  decisión del usuario). Estado en localStorage `yogaMinimal.tracker` `{v: 2, current, completed[]}`;
   cambiar esquema = subir `v` (resetea). **La clave conserva el nombre antiguo a
   propósito**: renombrarla reiniciaría el progreso guardado en el navegador.
 - La vista de inicio es el plan (Semana 1).
@@ -86,15 +91,19 @@ Notas de operación; sin contenido del libro.
   y guárdalas como RGB para mantener el fondo uniforme.
 - Reanudar generación pendiente: calcular slugs únicos de `images-map.json` menos PNGs
   existentes en `web/images/`; el número pendiente cambia con cada lote.
-- Las imágenes del corpus completo pesan ~148 MB: no se precachean en el SW público
-  más allá de las 9 de las secuencias públicas.
+- Las imágenes del corpus completo pesan ~148 MB y **se publican todas** en el sitio, pero
+  el SW público no las precachea: las guarda en caché bajo demanda al usarse. Recorrer todo
+  el plan puede acumular ~148 MB en la caché del navegador; el comentario `shortcut:` de
+  `web/pages-sw.js` indica cuándo conviene una política de cuota/LRU.
 
 ## Datos de uso personal (NO PUBLICAR)
 
 Contenido derivado de obra con copyright, uso estrictamente personal. Excluidos de git
-vía `.git/info/exclude` (no añadir al índice nunca) y del sitio público por la allowlist:
+vía `.git/info/exclude` (no añadir al índice nunca) y del sitio público por `FORBIDDEN`:
 
-- `web/week-data.json`
 - `Luz-sobre-el-Yoga.pdf`
 - `Luz-sobre-el-Yoga.md`
 - `125593660-iyengar-luz-sobre-el-yoga-yoga-dipika-pdf.pdf`
+
+`web/week-data.json` ya no está en esta lista: se publica en el sitio por decisión del
+2026-11-13.

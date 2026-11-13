@@ -6,7 +6,7 @@ PWA minimalista de yoga y meditación con servidor Zig embebido.
 - **Música**: bucle de handpan original con Web Audio API; una campanita entre posturas y un gong al terminar (un solo control ♪ Música).
 - **Sin conexión**: el service worker guarda los assets de la app.
 - **Un binario**: `zig build` genera `zig-out/bin/sama`, que incluye todo el frontend y las imágenes.
-- **Web pública**: `node scripts/build-pages.mjs` ensambla el sitio de GitHub Pages (solo contenido público).
+- **Web pública**: `node scripts/build-pages.mjs` ensambla el sitio de GitHub Pages (la app completa).
 
 ## Build y ejecución local
 
@@ -23,12 +23,13 @@ El binario (~151 MB) no depende de `web/` en ejecución: puedes copiarlo a cualq
 ## Sitio público (GitHub Pages)
 
 ```sh
-node scripts/build-pages.mjs      # genera dist/pages/ a partir de una allowlist
+node scripts/build-pages.mjs      # genera dist/pages/ (la app completa, ~149 MiB)
 node --test tests/build-boundary.test.mjs
 ```
 
-Se publica en `/sama/` mediante `.github/workflows/pages.yml`. No incluye el material privado
-(Plan 300 ni el libro). Detalles en [docs/ops.md](docs/ops.md).
+Se publica en `/sama/` mediante `.github/workflows/pages.yml`. Incluye la app completa,
+con el Plan 300 y sus datos (`week-data.json`, decisión del 2026-11-13); no incluye el
+libro (PDF/Markdown). Detalles en [docs/ops.md](docs/ops.md).
 
 ## Audio
 

@@ -1,6 +1,6 @@
 // Tests de frontera del build: sitio público (Pages) y tabla embebida del binario.
 // Ejecutar: node --test tests/build-boundary.test.mjs
-// Los canarios usan un origen fixture: prueban que nada privado puede entrar en la salida.
+// Los canarios usan un origen fixture: prueban que nada prohibido puede entrar en la salida.
 
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
@@ -9,7 +9,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
-import { buildPages, PUBLIC_ALLOWLIST, PUBLIC_POSE_SLUGS } from '../scripts/build-pages.mjs';
+import { buildPages, PUBLIC_ALLOWLIST } from '../scripts/build-pages.mjs';
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'sama-build-test-'));
@@ -24,14 +24,14 @@ function listFiles(dir, base = dir, acc = []) {
   return acc.sort();
 }
 
-// Origen fixture con cada archivo del contrato más los privados que NO deben publicarse.
+// Origen fixture con cada archivo del contrato más los ficheros que NO deben publicarse.
 function makeFixture(name) {
   const root = path.join(tmp, name);
   for (const e of PUBLIC_ALLOWLIST) {
     const dest = path.join(root, e.from);
     fs.mkdirSync(path.dirname(dest), { recursive: true });
     const body = e.from.endsWith('pages-sw.js') ? "const BUILD='__BUILD__';\n"
-      : e.from.endsWith('public.html') ? '<!doctype html><link rel="stylesheet" href="style.css"><script src="app.js"></script>\n'
+      : e.from.endsWith('index.html') ? '<!doctype html><link rel="stylesheet" href="style.css"><script src="app.js"></script>\n'
       : e.from.endsWith('.json') && e.from.includes('manifest') ? '{"start_url":"./index.html","icons":[]}\n'
       : e.from.endsWith('.json') ? '[]\n'
       : e.from.endsWith('.css') ? 'body{}\n'
@@ -39,12 +39,9 @@ function makeFixture(name) {
       : `PNG-${e.from}`;
     fs.writeFileSync(dest, body);
   }
-  // privados y prohibidos: deben quedar fuera de cualquier salida
+  // prohibidos: deben quedar fuera de cualquier salida
   const privados = {
-    'web/tracker.js': 'plan 300', 'web/tracker.css': 'x', 'web/day-player.js': 'x',
-    'web/week-data.json': '{"weeks":[]}', 'web/images-map.json': '{}',
-    'web/images/sama-icon.png': 'icon', 'web/images/anantasana.png': 'tracker-only',
-    'web/sw.js': 'private', 'web/index.html': '<h1>privado</h1>',
+    'web/sw.js': 'sama-private', // SW del servidor local: el público viene de pages-sw.js
     'Luz-sobre-el-Yoga.pdf': 'pdf', 'Luz-sobre-el-Yoga.md': '# libro',
     '125593660-iyengar-luz-sobre-el-yoga-yoga-dipika-pdf.pdf': 'pdf',
     'src/main.zig': 'zig', 'zig-out/bin/sama': 'bin', '.zig-cache/x.o': 'o',
@@ -60,30 +57,40 @@ function makeFixture(name) {
   return root;
 }
 
-test('contrato: sin duplicados, sin entradas prohibidas, pósters explícitos', () => {
+test('contrato: sin duplicados, la app completa incluida y FORBIDDEN rechaza lo prohibido', () => {
   assert.equal(new Set(expectedPublic).size, expectedPublic.length);
-  for (const e of PUBLIC_ALLOWLIST) {
-    assert.doesNotMatch(e.from, /tracker|day-player|week-data|images-map|sama-icon|\.pdf$|\.md$/i, e.from);
+  for (const f of ['index.html', 'tracker.css', 'tracker.js', 'day-player.js', 'manifest.json',
+    'sequences.json', 'meditation.json', 'images-map.json', 'week-data.json', 'sw.js']) {
+    assert.ok(expectedPublic.includes(f), `${f} ausente del contrato público`);
   }
-  // las 9 imágenes publicadas son exactamente las que usan las secuencias públicas
-  const used = new Set();
-  for (const f of ['sequences.json', 'meditation.json']) {
-    const data = JSON.parse(fs.readFileSync(path.join(REPO, 'web', f), 'utf8'));
-    for (const p of data.poses) used.add(p.image);
+  // PDF/Markdown del libro, Zig, binarios, audio sin masterizar, caché y metadatos: rechazados
+  const root = makeFixture('forbidden');
+  const bad = [
+    'libro.pdf', 'Luz-sobre-el-Yoga.md', 'src/main.zig', 'build.zig.zon',
+    'zig-out/o/obj.o', 'libfoo.a', 'run.log', 'scripts/build-pages.mjs',
+    'assets/handpan/A3.flac', 'assets/handpan/gong.ogg', 'audio/out.wav',
+    'web/.cache/x', 'web/DS_Store', '.git/HEAD',
+  ];
+  for (const rel of bad) {
+    assert.throws(
+      () => buildPages({ root, out: path.join(tmp, 'forbidden-out'), allowlist: [...PUBLIC_ALLOWLIST, { from: rel, to: rel }] }),
+      /entrada prohibida/, rel);
   }
-  assert.deepEqual([...used].sort(), [...PUBLIC_POSE_SLUGS].sort());
 });
 
-test('canario: el origen fixture con privados produce solo el inventario público', () => {
+test('canary: el origen fixture con prohibidos produce solo el inventario público', () => {
   const root = makeFixture('canary');
   const out = path.join(tmp, 'canary-out');
   const inv = buildPages({ root, out });
   assert.deepEqual(listFiles(out), expectedPublic);
   assert.equal(inv.files.length, expectedPublic.length);
+  assert.equal(inv.totalBytes, inv.files.reduce((n, f) => n + f.bytes, 0));
   const names = listFiles(out).join('\n');
-  assert.doesNotMatch(names, /tracker|day-player|week-data|images-map|sama-icon|anantasana|\.pdf|\.md|\.zig|\.o$|\.git|build\.|scripts|src\/|\.flac|\.ogg|CREDITS|LICENSE|compose-audio/);
-  const html = fs.readFileSync(path.join(out, 'index.html'), 'utf8');
-  assert.doesNotMatch(html, /privado/);
+  assert.doesNotMatch(names, /\.pdf$|\.md$|\.zig|\.zon|\.o$|\.a$|\.log$|\.mjs$|\.flac|\.ogg|\.wav|cache|DS_Store|\.git|CREDITS|LICENSE|compose-audio/m);
+  // el sw.js publicado es el de pages-sw.js con el build sustituido, no el SW privado
+  const sw = fs.readFileSync(path.join(out, 'sw.js'), 'utf8');
+  assert.doesNotMatch(sw, /__BUILD__/);
+  assert.match(sw, /const BUILD='[0-9a-f]{12}';/);
   assert.equal(fs.existsSync(`${out}.inventory.json`), true);
 });
 
@@ -96,7 +103,7 @@ test('rechaza symlink en un archivo del contrato', () => {
 
 test('rechaza referencias absolutas a la raíz del origen', () => {
   const root = makeFixture('absolute');
-  fs.writeFileSync(path.join(root, 'web/public.html'), '<link rel="stylesheet" href="/style.css">\n');
+  fs.writeFileSync(path.join(root, 'web/index.html'), '<link rel="stylesheet" href="/style.css">\n');
   assert.throws(() => buildPages({ root, out: path.join(tmp, 'absolute-out') }), /referencia absoluta/);
 });
 
@@ -210,15 +217,25 @@ test('rechaza sw sin exactamente un marcador __BUILD__', () => {
   assert.throws(() => buildPages({ root, out: path.join(tmp, 'nobuild-out') }), /__BUILD__/);
 });
 
-test('sw público: caché propia, URLs relativas al scope y precache = inventario público', () => {
+test('sw público: precache relativo al scope, sin imágenes y caché propia', () => {
   const src = fs.readFileSync(path.join(REPO, 'web/pages-sw.js'), 'utf8');
   assert.match(src, /PREFIX = 'sama-public-'/);
   assert.doesNotMatch(src, /['"`]\/[^\/]/, 'no debe haber rutas absolutas a la raíz');
+  assert.equal(src.split('__BUILD__').length - 1, 1, 'debe haber exactamente un __BUILD__');
   const block = src.slice(src.indexOf('const PRECACHE'), src.indexOf('].map'));
   const rels = [...block.matchAll(/'(\.\/[^']*)'/g)].map(m => m[1]);
-  const fromSw = [...new Set(rels.map(r => (r === './' ? 'index.html' : r.slice(2))))].sort();
-  const expected = expectedPublic.filter(p => p !== 'sw.js').sort();
-  assert.deepEqual(fromSw, expected);
+  const expected = [
+    './', './index.html', './style.css', './tracker.css', './app.js', './tracker.js',
+    './day-player.js', './manifest.json',
+    './sequences.json', './meditation.json', './images-map.json', './week-data.json',
+    './audio/handpan.mp3', './audio/transition.mp3', './audio/gong.mp3',
+    './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png',
+  ];
+  for (const p of expected) assert.ok(rels.includes(p), `${p} sin precache`);
+  assert.ok(!rels.some(r => r.startsWith('./images/')), 'las imágenes no se precachean (bajo demanda)');
+  assert.match(src, /shortcut:/, 'falta el comentario de límite de la caché de imágenes');
+  // activate: borra solo cachés propias (el origen github.io aloja otros proyectos)
+  assert.match(src, /k\.startsWith\(PREFIX\) && k !== CACHE/);
 });
 
 test('sw privado: nombre SAMA, prefijo propio y precache dentro de la tabla embebida', () => {
@@ -258,27 +275,48 @@ test('audio privado: tabla embebida con exactamente los 3 MP3 y precache del SW'
   for (const p of embedded) assert.ok(sw.includes(`'${p}'`), `${p} sin precache privado`);
 });
 
-test('sitio público real: inventario, enlaces locales y start_url', { skip: !fs.existsSync(path.join(REPO, 'web/public.html')) && 'web/public.html aún no existe (contrato del diseñador)' }, () => {
+test('sitio público real: app completa, week-data idéntico, imágenes y referencias', {
+  skip: !fs.existsSync(path.join(REPO, 'web/week-data.json')) && 'sin web/week-data.json (lo añade el coordinador)',
+}, () => {
   const out = path.join(tmp, 'real-out');
-  buildPages({ out });
+  const inv = buildPages({ out });
   assert.deepEqual(listFiles(out), expectedPublic);
-  // start_url, scope e iconos se resuelven desde la URL real del manifiesto (/sama/public-manifest.json):
+  // la app completa publicada
+  for (const f of ['index.html', 'tracker.js', 'day-player.js', 'images-map.json', 'week-data.json', 'manifest.json', 'sw.js']) {
+    assert.ok(expectedPublic.includes(f), `${f} ausente del sitio`);
+  }
+  // week-data.json publicado con exactamente los bytes de web/ y parseable
+  const published = fs.readFileSync(path.join(out, 'week-data.json'));
+  assert.deepEqual(published, fs.readFileSync(path.join(REPO, 'web', 'week-data.json')));
+  const wd = JSON.parse(published);
+  assert.ok(Array.isArray(wd.weeks) && wd.weeks.length === 300, 'week-data no parsea como el plan de 300 semanas');
+  // todas las imágenes de web/images/*.png publicadas, ni una menos
+  const webImgs = fs.readdirSync(path.join(REPO, 'web', 'images')).filter(f => f.endsWith('.png')).sort();
+  const pubImgs = listFiles(out).filter(f => f.startsWith('images/')).map(f => f.slice('images/'.length)).sort();
+  assert.deepEqual(pubImgs, webImgs);
+  assert.ok(pubImgs.length >= 140, `solo ${pubImgs.length} imágenes publicadas`);
+  // tamaño total registrado en el inventario
+  assert.equal(inv.totalBytes, inv.files.reduce((n, f) => n + f.bytes, 0));
+  assert.ok(inv.totalBytes > 100 * 1048576, 'el sitio debería publicar el corpus de imágenes (~148 MB)');
+
+  // start_url, scope e iconos se resuelven desde la URL real del manifiesto (/sama/manifest.json):
   // la app instalada debe arrancar y quedar bajo /sama/, sin rutas de raíz del origen.
-  const man = JSON.parse(fs.readFileSync(path.join(out, 'public-manifest.json'), 'utf8'));
-  const manifestUrl = new URL('http://x/sama/public-manifest.json');
+  const man = JSON.parse(fs.readFileSync(path.join(out, 'manifest.json'), 'utf8'));
+  const manifestUrl = new URL('http://x/sama/manifest.json');
   const start = new URL(man.start_url, manifestUrl);
-  const scope = new URL(man.scope ?? './', manifestUrl);
-  assert.equal(start.pathname, '/sama/');
-  assert.equal(scope.pathname, '/sama/');
+  const scope = new URL('./', manifestUrl); // sin scope explícito: el directorio del manifiesto
   assert.ok(start.pathname.startsWith(scope.pathname), 'start_url fuera de scope');
+  const startFile = start.pathname.slice(scope.pathname.length) || 'index.html';
+  assert.ok(expectedPublic.includes(startFile), `start_url resuelve a ${startFile}, no publicado`);
   for (const icon of man.icons) {
     const iconUrl = new URL(icon.src, manifestUrl);
     assert.ok(iconUrl.pathname.startsWith('/sama/'), icon.src);
     assert.ok(expectedPublic.includes(iconUrl.pathname.slice('/sama/'.length)), 'icono ausente: ' + icon.src);
   }
-  // enlaces relativos de HTML/CSS/manifest deben existir en el sitio
+
+  // enlaces relativos de HTML/CSS/manifest + precache del SW deben existir en el sitio
   const exists = rel => expectedPublic.includes(rel);
-  for (const f of ['index.html', 'style.css', 'public-manifest.json']) {
+  for (const f of ['index.html', 'style.css', 'manifest.json']) {
     const text = fs.readFileSync(path.join(out, f), 'utf8');
     for (const m of text.matchAll(/(?:href|src|start_url)"?\s*[=:]\s*"([^"]+)"|url\(\s*['"]?([^'")]+)/g)) {
       const ref = m[1] ?? m[2];
@@ -286,6 +324,12 @@ test('sitio público real: inventario, enlaces locales y start_url', { skip: !fs
       const rel = ref.replace(/^\.\//, '').split(/[?#]/)[0];
       assert.ok(exists(rel) || rel === '' || rel === '.', `${f} referencia ${ref} inexistente en el sitio`);
     }
+  }
+  const sw = fs.readFileSync(path.join(out, 'sw.js'), 'utf8');
+  const block = sw.slice(sw.indexOf('const PRECACHE'), sw.indexOf('].map'));
+  for (const m of block.matchAll(/'(\.\/[^']*)'/g)) {
+    const rel = m[1] === './' ? 'index.html' : m[1].slice(2);
+    assert.ok(exists(rel), `sw.js precachea ${m[1]} inexistente en el sitio`);
   }
 });
 
