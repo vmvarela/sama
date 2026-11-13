@@ -233,7 +233,11 @@ test('sw privado: nombre SAMA, prefijo propio y precache dentro de la tabla embe
   }
 });
 
-test('tabla embebida al día con web/ (scripts/gen-web-assets.mjs --check)', () => {
+// web/week-data.json es privado y no está en git: sin él la tabla generada no puede
+// compararse (CI no lo tiene), así que el chequeo solo aplica en local.
+test('tabla embebida al día con web/ (scripts/gen-web-assets.mjs --check)', {
+  skip: fs.existsSync(path.join(REPO, 'web/week-data.json')) ? false : 'sin web/week-data.json (archivo privado)',
+}, () => {
   execFileSync(process.execPath, [path.join(REPO, 'scripts/gen-web-assets.mjs'), '--check'], { stdio: 'pipe' });
 });
 
