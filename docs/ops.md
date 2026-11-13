@@ -75,6 +75,8 @@ Notas de operación; sin contenido del libro.
 ## Reproductor diario
 
 - «Practicar este día» usa `day-player.js`, separado del temporizador breve de yoga.
+- «Practicar esta semana» aparece en las semanas con posturas listadas y sin horario por días: reproduce
+  esas asanas tal cual (sin temporizador inventado, se avanza a mano) y descarta las de lectura OCR dudosa.
   Los tiempos exactos se cronometran; los rangos requieren elegir mínimo o máximo;
   repeticiones y pasos sin tiempo son manuales. `per_side` crea dos pasos completos,
   etiquetados «lado 1/2» sin inferir izquierda/derecha.
