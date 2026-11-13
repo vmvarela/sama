@@ -56,7 +56,7 @@
   let imageMap = {}; // nombre de postura → slug | null (images-map.json, clave «poses»)
   let state = loadState();
   let activePlayer = null;
-  let activeDay = null; // { schedule, day }
+  let activeDay = null; // { key, label, poses, notes }: día del horario o semana del plan
   let lastAnnouncedIndex = -1;
   let lastAnnouncedStatus = null;
   let lastStepCompletedAnnounced = false;
@@ -274,7 +274,7 @@
 
     // Cabecera
     els.player.kicker.textContent = `Práctica diaria · Semana ${state.current}`;
-    els.player.heading.textContent = activeDay && activeDay.day ? `Día ${activeDay.day.day}` : 'Día';
+    els.player.heading.textContent = activeDay ? activeDay.label : 'Práctica';
 
     // Postura actual
     const currentStep = step || {};
@@ -307,7 +307,7 @@
     }
 
     // Notas y alternativas del día
-    const dayNotes = activeDay && activeDay.day && activeDay.day.notes ? activeDay.day.notes : [];
+    const dayNotes = activeDay && activeDay.notes ? activeDay.notes : [];
     renderPlayerNotes(currentStep, dayNotes);
 
     // Temporizador y controles según tipo de duración
@@ -438,43 +438,49 @@
     lastAnnouncedStatus = status;
   }
 
-  function startDayPractice(s, d) {
+  // Pasos del reproductor: un día del horario o las posturas de una semana del plan.
+  function practiceSteps(practice) {
+    return (practice.poses || [])
+      .filter(p => p.matched !== false) // descarta nombres con lectura OCR dudosa
+      .map(p => ({ name: p.name, figures: p.figures }));
+  }
+
+  function startPractice(practice) {
     if (typeof window.DayPlayer !== 'function') {
       alert('El motor de práctica diaria (DayPlayer) no está disponible.');
       return;
     }
+    const steps = practiceSteps(practice);
+    if (!steps.length) return;
     if (activePlayer) {
       const st = activePlayer.getState();
-      const isSameDay = activeDay &&
-        activeDay.day && activeDay.day.day === d.day &&
-        activeDay.schedule &&
-        (activeDay.schedule === s || (activeDay.schedule.course === s.course && activeDay.schedule.rango === s.rango && activeDay.schedule.scope === s.scope));
+      const isSame = Boolean(activeDay && activeDay.key === practice.key);
 
       if (st && st.status !== 'finished') {
-        if (isSameDay) {
+        if (isSame) {
           // Reabre el reproductor existente conservando el paso actual y tiempo restante
           if (els.play && els.play.textContent.startsWith('⏸')) els.play.click();
           els.player.card.hidden = false;
           els.player.card.scrollIntoView({ behavior: 'smooth', block: 'start' });
           els.player.card.focus();
           updatePlayerUI(st, false);
-          announce(`Continuando práctica de día ${d.day}. Paso ${st.index + 1} de ${st.count}: ${st.step?.name || ''}`);
+          announce(`Continuando práctica de ${practice.label}. Paso ${st.index + 1} de ${st.count}: ${st.step?.name || ''}`);
           return;
         }
-        if (!confirm('Ya hay una práctica en curso. ¿Deseas detenerla para iniciar este día?')) return;
+        if (!confirm('Ya hay una práctica en curso. ¿Deseas detenerla para iniciar esta otra?')) return;
         activePlayer.finish();
       }
     }
     // Pausa el timer corto si estuviera activo
     if (els.play && els.play.textContent.startsWith('⏸')) els.play.click();
 
-    activeDay = { schedule: s, day: d };
+    activeDay = practice;
     lastAnnouncedIndex = -1;
     lastAnnouncedStatus = null;
     lastStepCompletedAnnounced = false;
 
     try {
-      activePlayer = new window.DayPlayer(d.poses, {
+      activePlayer = new window.DayPlayer(steps, {
         onUpdate: (st) => updatePlayerUI(st, false),
         now: () => Date.now(),
         schedule: (fn, ms) => setTimeout(fn, ms),
@@ -482,7 +488,7 @@
       });
     } catch (err) {
       console.error(err);
-      alert('No se pudo inicializar la práctica del día.');
+      alert('No se pudo inicializar la práctica.');
       return;
     }
 
@@ -490,6 +496,25 @@
     els.player.card.scrollIntoView({ behavior: 'smooth', block: 'start' });
     els.player.card.focus();
     updatePlayerUI(activePlayer.getState(), true);
+  }
+
+  function startDayPractice(s, d) {
+    startPractice({
+      key: `day|${s.course}|${s.rango}|${s.scope}|${d.day}`,
+      label: `Día ${d.day}`,
+      poses: d.poses,
+      notes: d.notes,
+    });
+  }
+
+  // Practica la secuencia de la semana mostrada (semanas sin horario por días).
+  function startWeekPractice(week) {
+    startPractice({
+      key: `week|${week.week}`,
+      label: `Semana ${week.week}`,
+      poses: week.poses,
+      notes: week.notes,
+    });
   }
 
   function pauseActiveDailyPlayer() {
@@ -595,7 +620,15 @@
     else if (week.kind === 'program') box.append(el('p', 'tracker-empty', 'Sin asanas listadas esta semana; revisa el plan por días si aplica.'));
     if (week.notes.length) box.append(block('Notas', notesList(week.notes)));
     if (week.uncertain) box.append(el('p', 'tracker-warn', 'Lectura OCR dudosa en esta semana: revisa con el libro.'));
-    for (const s of schedulesFor(week.week)) box.append(scheduleBlock(s));
+    const schedules = schedulesFor(week.week);
+    // Semanas sin horario por días: la práctica sale de las posturas de la semana mostrada.
+    if (week.poses.length && !schedules.length) {
+      const btn = el('button', 'tracker-practice-btn', '▶ Practicar esta semana');
+      btn.type = 'button';
+      btn.addEventListener('click', () => startWeekPractice(week));
+      box.append(btn);
+    }
+    for (const s of schedules) box.append(scheduleBlock(s));
     const apuntes = data.apuntes.filter(a => a.course === week.course);
     if (apuntes.length) box.append(apuntesBlock(week.course, apuntes));
   }

@@ -255,3 +255,19 @@ test('repeticiones exigen count entero positivo', () => {
   }
   assert.equal(new DayPlayer([{ timing: { kind: 'repetitions', count: 10, basis: 'total' } }]).getState().status, 'manual');
 });
+
+test('posturas de una semana sin duración (sin timing) se navegan a mano', () => {
+  const clock = fakeClock();
+  const week = [{ name: 'Tadasana', figures: ['1'] }, { name: 'Vrksasana', figures: ['2'] }];
+  const p = make(week, clock);
+  let s = p.getState();
+  assert.equal(s.status, 'manual');
+  assert.equal(s.count, 2);
+  assert.equal(s.remainingSeconds, null);
+  assert.equal(p.start().status, 'manual'); // no inventa temporizador
+  s = p.next();
+  assert.equal(s.index, 1);
+  assert.equal(s.step.name, 'Vrksasana');
+  assert.equal(clock.pending(), 0);
+  assert.equal(p.next().status, 'finished');
+});
