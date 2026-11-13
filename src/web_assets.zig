@@ -11,6 +11,9 @@ pub const Asset = struct {
 
 pub const assets = [_]Asset{
     .{ .path = "/app.js", .content = @embedFile("../web/app.js"), .content_type = "application/javascript" },
+    .{ .path = "/audio/gong.mp3", .content = @embedFile("../web/audio/gong.mp3"), .content_type = "audio/mpeg" },
+    .{ .path = "/audio/handpan.mp3", .content = @embedFile("../web/audio/handpan.mp3"), .content_type = "audio/mpeg" },
+    .{ .path = "/audio/transition.mp3", .content = @embedFile("../web/audio/transition.mp3"), .content_type = "audio/mpeg" },
     .{ .path = "/day-player.js", .content = @embedFile("../web/day-player.js"), .content_type = "application/javascript" },
     .{ .path = "/icons/icon-180.png", .content = @embedFile("../web/icons/icon-180.png"), .content_type = "image/png" },
     .{ .path = "/icons/icon-192.png", .content = @embedFile("../web/icons/icon-192.png"), .content_type = "image/png" },

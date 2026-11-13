@@ -1,10 +1,12 @@
 // SW privado (servidor local SAMA, origen propio). Caches propias con prefijo sama-private-.
-const CACHE = 'sama-private-v10';
+const CACHE = 'sama-private-v11';
 const OWN_CACHE = /^(sama-private-|yoga-minimal-)/; // yoga-minimal-*: nombre anterior del mismo proyecto
 const SELF_UPDATE = ['/', '/index.html', '/style.css', '/tracker.css', '/app.js', '/tracker.js', '/day-player.js', '/sw.js'];
 const OFFLINE_DATA = ['/manifest.json', '/sequences.json', '/meditation.json', '/week-data.json', '/images-map.json'];
 const ICONS = ['/icons/icon-180.png', '/icons/icon-192.png', '/icons/icon-512.png'];
-const ASSETS = [...SELF_UPDATE, ...OFFLINE_DATA, ...ICONS];
+// audio: cache-first como los datos; si cambian los bytes, sube CACHE.
+const AUDIO = ['/audio/gong.mp3', '/audio/handpan.mp3', '/audio/transition.mp3'];
+const ASSETS = [...SELF_UPDATE, ...OFFLINE_DATA, ...ICONS, ...AUDIO];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)).then(() => self.skipWaiting()));

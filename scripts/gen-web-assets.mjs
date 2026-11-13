@@ -18,6 +18,8 @@ const TOP_LEVEL = [
   'images-map.json', 'sw.js',
 ];
 
+const AUDIO = ['gong.mp3', 'handpan.mp3', 'transition.mp3'];
+
 const TYPES = {
   '.html': 'text/html; charset=utf-8',
   '.css': 'text/css; charset=utf-8',
@@ -26,6 +28,7 @@ const TYPES = {
   '.png': 'image/png',
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
+  '.mp3': 'audio/mpeg',
 };
 
 function regularFiles(dir, exts) {
@@ -48,6 +51,10 @@ export function collectEntries() {
   for (const name of regularFiles(path.join(ROOT, 'web', 'images'), ['.png'])) {
     entries.push({ url: `/images/${name}`, rel: `web/images/${name}` });
   }
+  // Sonido: exactamente estos tres MP3 (las fuentes FLAC/OGG viven fuera de web/).
+  const audio = regularFiles(path.join(ROOT, 'web', 'audio'), ['.mp3']);
+  if (audio.join() !== AUDIO.join()) throw new Error(`web/audio debe contener exactamente: ${AUDIO.join(', ')}`);
+  for (const name of audio) entries.push({ url: `/audio/${name}`, rel: `web/audio/${name}` });
   const icons = path.join(ROOT, 'web', 'icons');
   if (fs.existsSync(icons)) {
     for (const name of regularFiles(icons, Object.keys(TYPES))) {

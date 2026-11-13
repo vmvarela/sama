@@ -9,6 +9,7 @@ const SCOPE = self.registration.scope;
 const PRECACHE = [
   './', './index.html', './public-manifest.json', './style.css', './app.js',
   './sequences.json', './meditation.json',
+  './audio/handpan.mp3', './audio/transition.mp3', './audio/gong.mp3',
   './icons/icon-180.png', './icons/icon-192.png', './icons/icon-512.png',
   './images/tadasana.png', './images/uttanasana.png', './images/adho-mukha-svanasana.png',
   './images/virabhadrasana-i.png', './images/virabhadrasana-ii.png', './images/trikonasana.png',

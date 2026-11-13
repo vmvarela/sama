@@ -49,6 +49,9 @@ function makeFixture(name) {
     '125593660-iyengar-luz-sobre-el-yoga-yoga-dipika-pdf.pdf': 'pdf',
     'src/main.zig': 'zig', 'zig-out/bin/sama': 'bin', '.zig-cache/x.o': 'o',
     'build.zig': 'zig', 'scripts/build-pages.mjs': 'x', '.git/HEAD': 'ref',
+    'assets/handpan/A3_01.flac': 'flac', 'assets/handpan/gong-sweet.ogg': 'ogg',
+    'assets/handpan/CREDITS.txt': 'credits', 'assets/handpan/LICENSE.txt': 'license',
+    'scripts/compose-audio.py': 'py', 'web/audio/source.flac': 'flac',
   };
   for (const [rel, body] of Object.entries(privados)) {
     fs.mkdirSync(path.dirname(path.join(root, rel)), { recursive: true });
@@ -78,7 +81,7 @@ test('canario: el origen fixture con privados produce solo el inventario públic
   assert.deepEqual(listFiles(out), expectedPublic);
   assert.equal(inv.files.length, expectedPublic.length);
   const names = listFiles(out).join('\n');
-  assert.doesNotMatch(names, /tracker|day-player|week-data|images-map|sama-icon|anantasana|\.pdf|\.md|\.zig|\.o$|\.git|build\.|scripts|src/);
+  assert.doesNotMatch(names, /tracker|day-player|week-data|images-map|sama-icon|anantasana|\.pdf|\.md|\.zig|\.o$|\.git|build\.|scripts|src\/|\.flac|\.ogg|CREDITS|LICENSE|compose-audio/);
   const html = fs.readFileSync(path.join(out, 'index.html'), 'utf8');
   assert.doesNotMatch(html, /privado/);
   assert.equal(fs.existsSync(`${out}.inventory.json`), true);
@@ -232,6 +235,23 @@ test('sw privado: nombre SAMA, prefijo propio y precache dentro de la tabla embe
 
 test('tabla embebida al día con web/ (scripts/gen-web-assets.mjs --check)', () => {
   execFileSync(process.execPath, [path.join(REPO, 'scripts/gen-web-assets.mjs'), '--check'], { stdio: 'pipe' });
+});
+
+test('audio público: solo los 3 MP3 del sonido, en allowlist y en precache del SW', () => {
+  const audio = PUBLIC_ALLOWLIST.filter(e => e.to.startsWith('audio/'));
+  assert.deepEqual(audio.map(e => e.from).sort(), ['web/audio/gong.mp3', 'web/audio/handpan.mp3', 'web/audio/transition.mp3']);
+  assert.deepEqual(audio.map(e => e.to).sort(), ['audio/gong.mp3', 'audio/handpan.mp3', 'audio/transition.mp3']);
+  const precache = fs.readFileSync(path.join(REPO, 'web/pages-sw.js'), 'utf8');
+  for (const e of audio) assert.ok(precache.includes(`'./${e.to}'`), `${e.to} sin precache`);
+});
+
+test('audio privado: tabla embebida con exactamente los 3 MP3 y precache del SW', () => {
+  const table = fs.readFileSync(path.join(REPO, 'src/web_assets.zig'), 'utf8');
+  const embedded = [...table.matchAll(/\.path = "(\/audio\/[^"]+)"/g)].map(m => m[1]).sort();
+  assert.deepEqual(embedded, ['/audio/gong.mp3', '/audio/handpan.mp3', '/audio/transition.mp3']);
+  assert.deepEqual(fs.readdirSync(path.join(REPO, 'web/audio')).sort(), embedded.map(p => p.slice('/audio/'.length)));
+  const sw = fs.readFileSync(path.join(REPO, 'web/sw.js'), 'utf8');
+  for (const p of embedded) assert.ok(sw.includes(`'${p}'`), `${p} sin precache privado`);
 });
 
 test('sitio público real: inventario, enlaces locales y start_url', { skip: !fs.existsSync(path.join(REPO, 'web/public.html')) && 'web/public.html aún no existe (contrato del diseñador)' }, () => {

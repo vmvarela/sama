@@ -16,6 +16,7 @@ Notas de operación; sin contenido del libro.
   en background de la sesión mueren al reaprovecharse.
 - Pruebas: `zig build test` (ruta exacta, alias `/`, sin traversal) y
   `node --test tests/build-boundary.test.mjs tests/day-player.test.js`.
+  Sonido: `node --test tests/app-audio.test.js` (transiciones, gong y rutas de audio).
 
 ## Sitio público (GitHub Pages)
 
@@ -25,10 +26,11 @@ Notas de operación; sin contenido del libro.
   `dist/pages.inventory.json` fuera del sitio.
 - Contenido público: `index.html` (desde `web/public.html`), `public-manifest.json`,
   `sw.js` (desde `web/pages-sw.js`), `style.css`, `app.js`, `sequences.json`,
-  `meditation.json`, 3 iconos y solo las 9 imágenes de las secuencias públicas.
+  `meditation.json`, 3 iconos, solo las 9 imágenes de las secuencias públicas y los 3 MP3
+  del sonido (`audio/handpan.mp3`, `audio/transition.mp3`, `audio/gong.mp3`).
 - Excluido siempre: Plan 300 (`tracker*`, `day-player.js`, `week-data.json`,
   `images-map.json`), PDF/Markdown del libro, `sama-icon.png`, otras imágenes,
-  binario Zig, cachés y `src/`.
+  fuentes de audio (FLAC/OGG en `assets/handpan/`), binario Zig, cachés y `src/`.
 - El sitio debe funcionar bajo `/sama/`: nada de rutas absolutas `"/…"`; el build
   falla si aparecen. `start_url` del manifiesto debe resolver a un archivo publicado.
 - Despliegue: `.github/workflows/pages.yml` en `master` (y manual). Permisos mínimos:
@@ -41,7 +43,7 @@ Notas de operación; sin contenido del libro.
 
 ## Service workers
 
-- **Privado** (`web/sw.js`): `CACHE 'sama-private-v10'`. Archivos de la app (`/`,
+- **Privado** (`web/sw.js`): `CACHE 'sama-private-v11'`. Archivos de la app (`/`,
   `index.html`, `style.css`, `tracker.css`, `app.js`, `tracker.js`, `day-player.js`,
   `sw.js`) → network-first: se actualizan solos tras editar, **no hace falta bump**.
   Datos (`manifest.json`, `sequences.json`, `meditation.json`, `week-data.json`,

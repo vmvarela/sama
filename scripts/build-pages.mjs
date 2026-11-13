@@ -25,6 +25,9 @@ export const PUBLIC_ALLOWLIST = [
   { from: 'web/pages-sw.js', to: 'sw.js', transform: 'build-id' },
   { from: 'web/style.css', to: 'style.css' },
   { from: 'web/app.js', to: 'app.js' },
+  { from: 'web/audio/handpan.mp3', to: 'audio/handpan.mp3' },
+  { from: 'web/audio/transition.mp3', to: 'audio/transition.mp3' },
+  { from: 'web/audio/gong.mp3', to: 'audio/gong.mp3' },
   { from: 'web/sequences.json', to: 'sequences.json' },
   { from: 'web/meditation.json', to: 'meditation.json' },
   { from: 'web/icons/icon-180.png', to: 'icons/icon-180.png' },
@@ -34,7 +37,7 @@ export const PUBLIC_ALLOWLIST = [
 ];
 
 // Nada de esto puede aparecer en el sitio público (Plan 300, PDF/Markdown, binario, caché).
-const FORBIDDEN = /(tracker|day-player|week-data|images-map|sama-icon|\.pdf$|\.md$|\.zig|\.zon|\.o$|\.a$|\.log$|cache|DS_Store|\.git)/i;
+const FORBIDDEN = /(tracker|day-player|week-data|images-map|sama-icon|\.pdf$|\.md$|\.zig|\.zon|\.o$|\.a$|\.log$|\.(flac|ogg|wav)$|cache|DS_Store|\.git)/i;
 const TEXT_EXT = /\.(html|css|js|json|webmanifest)$/;
 // Referencias absolutas a la raíz del origen (rompen en /sama/): "/x", '/x', `/x`, url(/x), =/x
 const ABSOLUTE_REF = /(["'`(]|=)\/(?![\/*])/;

@@ -1,0 +1,5 @@
+Handpan samples: FreePats Hang tuned in D minor, samples recorded by Gonzalo and Roberto at Medialab-Prado (Madrid, July 2017), played by Mar and edited by Roberto. Released under CC0 1.0 Universal. Source: https://github.com/freepats/hang-D-minor
+
+Transition bowl and closing gong: Joseph Sardin / BigSoundBank, both CC0 1.0 Universal. Sources: https://bigsoundbank.com/tibetan-bowl-struck-2-s2553.html and https://bigsoundbank.com/gong-sweet-s1482.html
+
+The original SAMA handpan arrangement was composed for this project from the cited CC0 samples. No pitch shifting is applied.

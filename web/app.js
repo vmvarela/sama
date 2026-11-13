@@ -70,11 +70,14 @@ function startTimer() {
     updateTimer();
     if (timeLeft <= 0) {
       clearInterval(timerInterval);
+      // solo el avance automático suena: prev/next/selección manual y pausa son silenciosos
       if (currentIndex < sequence.length - 1) {
         showPose(currentIndex + 1);
+        playCue('chime');
       } else {
         isPlaying = false;
         els.play.textContent = '▶ Iniciar';
+        playCue('gong');
       }
     }
   }, 1000);
@@ -86,6 +89,7 @@ els.play.addEventListener('click', () => {
     clearInterval(timerInterval);
     els.play.textContent = '▶ Reanudar';
   } else {
+    if (timeLeft <= 0) showPose(0); // sesión terminada: reinicia desde el principio
     isPlaying = true;
     els.play.textContent = '⏸ Pausar';
     startTimer();
@@ -99,59 +103,82 @@ if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
-// --- Música ambiental (Web Audio API) ---
+// --- Sonido (Web Audio API): bucle de handpan y señales; un solo control para todo ---
+// Los MP3 se leen con fetch y se decodifican: bucle sin hueco y sin peticiones Range.
+// shortcut: decodificación completa en memoria (~0.5 MB), basta para estas pistas cortas.
+const SOUNDS = { loop: 'audio/handpan.mp3', chime: 'audio/transition.mp3', gong: 'audio/gong.mp3' };
 let audioCtx = null;
-let musicNodes = [];
-let musicOn = false;
+let soundOn = false;
+let buffers = null;      // { loop, chime, gong } ya decodificados
+let loading = null;      // promesa única de carga (se reintenta si falla)
+let loopSrc = null;      // fuente del bucle activo
+const voices = new Map(); // fuente -> ganancia, para poder parar todo lo que suena
 
-function startMusic() {
-  if (musicOn) return;
-  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  const ctx = audioCtx;
-  // Drone suave: tres osciladores con frecuencias armónicas bajas
-  const freqs = [110, 164.81, 220];
-  const master = ctx.createGain();
-  master.gain.value = 0.0;
-  master.gain.linearRampToValueAtTime(0.08, ctx.currentTime + 2);
-  master.connect(ctx.destination);
-  const filter = ctx.createBiquadFilter();
-  filter.type = 'lowpass';
-  filter.frequency.value = 600;
-  filter.connect(master);
-  freqs.forEach(f => {
-    const osc = ctx.createOscillator();
-    osc.type = 'sine';
-    osc.frequency.value = f;
-    const g = ctx.createGain();
-    g.gain.value = 0.3;
-    osc.connect(g);
-    g.connect(filter);
-    osc.start();
-    musicNodes.push(osc, g);
-  });
-  musicNodes.push(filter, master);
-  musicOn = true;
-  els.music.textContent = '♫ Música (on)';
+function loadSounds() {
+  if (!loading) {
+    loading = Promise.all(Object.entries(SOUNDS).map(async ([key, url]) => {
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`${url}: ${res.status}`);
+      return [key, await audioCtx.decodeAudioData(await res.arrayBuffer())];
+    })).then(list => { buffers = Object.fromEntries(list); })
+      .catch(err => { loading = null; throw err; });
+  }
+  return loading;
 }
 
-function stopMusic() {
-  if (!musicOn) return;
-  const ctx = audioCtx;
-  // fade out
-  const master = musicNodes[musicNodes.length - 1];
-  if (master && master.gain) {
-    master.gain.linearRampToValueAtTime(0.0, ctx.currentTime + 1.5);
+function voice(buffer, { loop = false, gain = 1, fadeIn = 0 } = {}) {
+  const now = audioCtx.currentTime;
+  const src = audioCtx.createBufferSource();
+  const g = audioCtx.createGain();
+  src.buffer = buffer;
+  src.loop = loop;
+  g.gain.setValueAtTime(fadeIn ? 0 : gain, now);
+  if (fadeIn) g.gain.linearRampToValueAtTime(gain, now + fadeIn);
+  src.connect(g);
+  g.connect(audioCtx.destination);
+  src.onended = () => { src.disconnect(); g.disconnect(); voices.delete(src); };
+  voices.set(src, g);
+  src.start();
+  return src;
+}
+
+function stopAll() {
+  const now = audioCtx.currentTime;
+  for (const [src, g] of voices) {
+    g.gain.cancelScheduledValues(now);
+    g.gain.setValueAtTime(g.gain.value, now);
+    g.gain.linearRampToValueAtTime(0, now + 1.5);
+    src.stop(now + 1.5);
   }
-  setTimeout(() => {
-    musicNodes.forEach(n => { try { if (n.stop) n.stop(); } catch(e){} });
-    musicNodes = [];
-  }, 1600);
-  musicOn = false;
+  voices.clear();
+}
+
+function startSound() {
+  const Ctx = window.AudioContext || window.webkitAudioContext;
+  if (!Ctx) return;
+  soundOn = true;
+  els.music.textContent = '♫ Música (on)';
+  if (!audioCtx) audioCtx = new Ctx();
+  audioCtx.resume().catch(() => {}); // dentro del gesto del usuario
+  loadSounds().then(() => {
+    if (soundOn && !loopSrc) loopSrc = voice(buffers.loop, { loop: true, gain: 0.6, fadeIn: 2 });
+  }).catch(() => stopSound());
+}
+
+function stopSound() {
+  soundOn = false;
+  loopSrc = null;
   els.music.textContent = '♪ Música';
+  if (audioCtx) stopAll();
+}
+
+// Señales de transición: solo si el sonido está activo y ya hay buffers.
+function playCue(name) {
+  if (soundOn && buffers) voice(buffers[name]);
 }
 
 els.music.addEventListener('click', () => {
-  if (musicOn) stopMusic(); else startMusic();
+  if (soundOn) stopSound(); else startSound();
 });
 
 els.modeYoga.addEventListener('click', () => loadSequence('yoga'));
