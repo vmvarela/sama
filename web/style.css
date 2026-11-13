@@ -299,6 +299,82 @@ summary:focus-visible {
   outline-offset: 2px;
 }
 
+/* Ajustes para móvil en vertical: cabecera y tarjeta compactas para que
+   la ilustración, el título, la instrucción y todos los controles quepan
+   en pantalla sin desplazamiento. */
+@media (max-width: 480px) and (orientation: portrait) {
+  header {
+    padding-top: max(0.5rem, var(--sat));
+    padding-bottom: 0.5rem;
+  }
+
+  .brand {
+    margin-bottom: 0.1rem;
+    gap: 0.5rem;
+  }
+
+  .brand-logo {
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+  }
+
+  .mode-nav {
+    margin: 0.2rem 0 0.15rem;
+    gap: 0.4rem;
+  }
+
+  .mode-btn {
+    min-height: 38px;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .session-info {
+    font-size: 0.82rem;
+    margin-top: 0.15rem;
+  }
+
+  main {
+    padding-top: 0.6rem;
+    gap: 0.55rem;
+  }
+
+  .pose-card {
+    padding: 0.9rem 1rem;
+    border-radius: 12px;
+  }
+
+  .pose-card img {
+    /* la ilustración se adapta a la altura real de la ventana */
+    max-height: min(30vh, 260px);
+    max-height: min(30dvh, 260px);
+    max-width: 260px;
+    margin-bottom: 0.55rem;
+  }
+
+  .pose-card h2 {
+    font-size: 1.15rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .instruction {
+    font-size: 0.88rem;
+    line-height: 1.4;
+    margin-bottom: 0.3rem;
+  }
+
+  .controls {
+    gap: 0.5rem;
+  }
+
+  .controls button {
+    min-height: 42px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.88rem;
+  }
+}
+
 /* Ajustes responsivos para apaisado y pantallas compactas */
 @media (orientation: landscape) and (max-height: 540px) {
   header {
